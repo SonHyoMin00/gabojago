@@ -7,7 +7,7 @@ import javax.persistence.Id;
 @Entity
 public class Post {
     @Id
-    private Long post_id;
+    private Long postId;
 
     @Column
     private String title;
