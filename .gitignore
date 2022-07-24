@@ -36,3 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 src/main/resources/application-service.properties
+
+src/main/resources/application-hmlocal.properties
