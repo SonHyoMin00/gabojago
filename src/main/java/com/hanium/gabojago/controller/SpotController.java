@@ -36,7 +36,7 @@ public class SpotController {
     }
 
     // 상세정보 조회
-    @GetMapping("id/{idx}")
+    @GetMapping("hotplaces/id/{idx}")
     public List<Spot> daejeonFindHotplace(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
     }
