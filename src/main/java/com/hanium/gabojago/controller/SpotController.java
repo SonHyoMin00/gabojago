@@ -24,9 +24,10 @@ public class SpotController {
 
     // 조회순 조회
     @GetMapping("hotplaces")
-    public Page<Spot> getHotplacesByViewCnt(
-            @RequestParam(required = false, defaultValue = "0", value = "page")int page) {
-        return spotService.findHotplaceByViewCnt(page);
+    public List<SpotResonse> getHotplacesByViewCnt(
+            @RequestParam(required = false, defaultValue = "0", value = "page")int page,
+            @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
+        return spotService.findHotplaceByViewCnt(page, size);
     }
 
 

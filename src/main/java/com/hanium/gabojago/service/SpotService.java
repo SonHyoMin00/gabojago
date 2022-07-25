@@ -22,7 +22,10 @@ public class SpotService {
         return spots.stream().map(SpotResonse::new).collect(Collectors.toList());
     }
 
-    public Page<Spot> findHotplaceByViewCnt(int page) {
-        return spotRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "viewCnt")));
+    public List<SpotResonse> findHotplaceByViewCnt(int page, int size) {
+        Page<Spot> spots = spotRepository.findAll(PageRequest.of(
+                page, size, Sort.by(Sort.Direction.DESC, "viewCnt")));
+        return spots.getContent()
+                .stream().map(SpotResonse::new).collect(Collectors.toList());
     }
 }
