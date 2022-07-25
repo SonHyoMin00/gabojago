@@ -1,6 +1,6 @@
 /*
 Created: 2022-07-06
-Modified: 2022-07-07
+Modified: 2022-07-23
 Model: gabojago
 Database: MySQL 5.5
 */
@@ -11,20 +11,20 @@ Database: MySQL 5.5
 
 CREATE TABLE `user`
 (
-    `user_id` Bigint NOT NULL,
+    `user_id` Bigint NOT NULL AUTO_INCREMENT,
     `email` Varchar(30) NOT NULL,
     `name` Varchar(20) NOT NULL,
-    `gender` Int(11) NOT NULL,
     `age` Tinyint NOT NULL,
     `location` Varchar(255) DEFAULT 'Seoul',
-    `profile_photo` Varchar(255)
+    `profile_photo` Varchar(255),
+    PRIMARY KEY (`user_id`)
 )
 ;
 
-ALTER TABLE `user` ADD PRIMARY KEY (`user_id`)
+ALTER TABLE `user` ADD UNIQUE `이메일` (`email`)
 ;
 
-ALTER TABLE `user` ADD UNIQUE `이메일` (`email`)
+ALTER TABLE `user` ADD UNIQUE `닉네임` (`name`)
 ;
 
 -- Table post
@@ -69,14 +69,13 @@ CREATE INDEX `IX_Relationship3` ON `comment` (`post_id`)
 CREATE TABLE `spot`
 (
     `spot_id` Bigint NOT NULL AUTO_INCREMENT,
-    `spot_name` Varchar(20) NOT NULL,
+    `spot_name` Varchar(50) NOT NULL,
     `address` Varchar(100) NOT NULL,
     `region` Varchar(10) NOT NULL,
-    `detail` Varchar(50),
-    `tel` Varchar(20) NOT NULL,
+    `detail` Varchar(255),
+    `tel` Varchar(20),
+    `spot_image` Varchar(500),
     `view_cnt` Int NOT NULL DEFAULT 0,
-    `spot_x` Int,
-    `spot_y` Int,
     PRIMARY KEY (`spot_id`)
 )
 ;
@@ -127,6 +126,9 @@ CREATE TABLE `tag`
 )
 ;
 
+ALTER TABLE `tag` ADD UNIQUE `태그값` (`value`)
+;
+
 -- Table spot_age_statistic
 
 CREATE TABLE `spot_age_statistic`
@@ -174,6 +176,9 @@ CREATE TABLE `file`
 CREATE INDEX `IX_Relationship11` ON `file` (`post_id`)
 ;
 
+ALTER TABLE `file` ADD UNIQUE `파일명` (`file_name`)
+;
+
 -- Table spot_tag
 
 CREATE TABLE `spot_tag`
@@ -215,7 +220,7 @@ CREATE TABLE `user_tag_statistic`
     `user_tag_id` Bigint NOT NULL AUTO_INCREMENT,
     `user_id` Bigint NOT NULL,
     `tag_id` Int NOT NULL,
-    `tag_cnt` Int NOT NULL DEFAULT 0,
+    `tag_cnt` Int NOT NULL DEFAULT 1,
     PRIMARY KEY (`user_tag_id`)
 )
 ;

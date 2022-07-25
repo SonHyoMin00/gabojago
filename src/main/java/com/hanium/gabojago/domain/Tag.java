@@ -8,10 +8,10 @@ import javax.persistence.Id;
 
 @Getter
 @Entity
-public class Post {
+public class Tag {
     @Id
-    private Long postId;
+    Integer tagId;
 
     @Column
-    private String title;
+    String value;
 }
