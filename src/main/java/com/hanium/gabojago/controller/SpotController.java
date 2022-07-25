@@ -1,6 +1,7 @@
 package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.dto.SpotResonse;
 import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public class SpotController {
 
     // 실시간 순위 조회(top 10)
     @GetMapping("hotplaces/realtime")
-    public List<Spot> getRealtimeHotplaces() {
+    public List<SpotResonse> getRealtimeHotplaces() {
         return spotService.getRealtimeHotplaces();
     }
 
