@@ -5,6 +5,7 @@ import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +33,12 @@ public class SpotController {
     @GetMapping("test")
     public List<Spot> daejeonFindHotplace(){
         return spotService.daejeonFindHotplace("대전");
+    }
+
+    // 상세정보 조회
+    @GetMapping("id/{idx}")
+    public List<Spot> daejeonFindHotplace(@PathVariable("idx") Long id ) {
+        return spotService.findHotplaceBySpotId(id);
     }
 
 

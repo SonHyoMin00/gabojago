@@ -9,4 +9,6 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
     List<Spot> findTop10ByOrderByViewCntDesc();
 
     List<Spot> findTop20ByRegion(String region);
+
+    List<Spot> findAllBySpotId(Long spotId);
 }

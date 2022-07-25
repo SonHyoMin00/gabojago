@@ -26,4 +26,8 @@ public class SpotService {
     public List<Spot> daejeonFindHotplace(String region){
         return spotRepository.findTop20ByRegion("대전");
     }
+
+    public List<Spot> findHotplaceBySpotId(Long spotId){
+        return spotRepository.findAllBySpotId(spotId);
+    }
 }
