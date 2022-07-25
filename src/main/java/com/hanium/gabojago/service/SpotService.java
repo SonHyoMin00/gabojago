@@ -22,4 +22,8 @@ public class SpotService {
     public Page<Spot> findHotplaceByViewCnt(int page) {
         return spotRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "viewCnt")));
     }
+
+    public List<Spot> daejeonFindHotplace(String region){
+        return spotRepository.findTop20ByRegion("대전");
+    }
 }

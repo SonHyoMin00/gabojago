@@ -28,5 +28,11 @@ public class SpotController {
         return spotService.findHotplaceByViewCnt(page);
     }
 
+    // 대전지역 20개 핫플 조회
+    @GetMapping("test")
+    public List<Spot> daejeonFindHotplace(){
+        return spotService.daejeonFindHotplace("대전");
+    }
+
 
 }
