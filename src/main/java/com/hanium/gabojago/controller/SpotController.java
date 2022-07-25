@@ -6,6 +6,7 @@ import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,5 +31,15 @@ public class SpotController {
         return spotService.findHotplaceByViewCnt(page, size);
     }
 
+    // 지역별 순위 조회
+    @GetMapping("hotplaces/region/{region}")
+    public List<SpotResonse> getHotplacesByRegion(
+            @PathVariable String region,
+            @RequestParam(required = false, defaultValue = "0", value = "page")int page,
+            @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
+        return spotService.findHotplacesByRegion(region, page, size);
+    }
+
+    // 컨셉별 핫플레이스 조회
 
 }

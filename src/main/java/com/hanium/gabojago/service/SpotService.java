@@ -6,6 +6,7 @@ import com.hanium.gabojago.repository.SpotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,14 @@ public class SpotService {
     public List<SpotResonse> findHotplaceByViewCnt(int page, int size) {
         Page<Spot> spots = spotRepository.findAll(PageRequest.of(
                 page, size, Sort.by(Sort.Direction.DESC, "viewCnt")));
+        return spots.getContent()
+                .stream().map(SpotResonse::new).collect(Collectors.toList());
+    }
+
+    public List<SpotResonse> findHotplacesByRegion(String region, int page, int size) {
+        Pageable pageable = PageRequest.of(
+                page, size, Sort.by(Sort.Direction.DESC, "viewCnt"));
+        Page<Spot> spots = spotRepository.findByRegion(region, pageable);
         return spots.getContent()
                 .stream().map(SpotResonse::new).collect(Collectors.toList());
     }
