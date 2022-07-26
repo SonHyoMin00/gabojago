@@ -25,11 +25,6 @@ public class SpotService {
         return spotRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "viewCnt")));
     }
 
-    public List<Spot> daejeonFindHotplace(String region){
-        return spotRepository.findTop20ByRegion("대전");
-    }
-
-
     public List<SpotResponse> findHotplaceBySpotId(Long spotId){
         List<Spot> spots = spotRepository.findAllBySpotId(spotId);
         return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
