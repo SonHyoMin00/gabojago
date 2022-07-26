@@ -1,6 +1,7 @@
 package com.hanium.gabojago.dto;
 
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.domain.SpotTag;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +30,20 @@ public class SpotResponse {
         this.spotImage = entity.getSpotImage();
         this.viewCnt = entity.getViewCnt();
         this.spotTags = entity.getSpotTags().stream()
+                .map(SpotTagResponse::new).collect(Collectors.toList());
+    }
+
+    public SpotResponse(SpotTag entity) {
+        Spot spot = entity.getSpot();
+        this.spotId = spot.getSpotId();
+        this.spotName = spot.getSpotName();
+        this.address = spot.getAddress();
+        this.region = spot.getRegion();
+        this.detail = spot.getDetail();
+        this.tel = spot.getTel();
+        this.spotImage = spot.getSpotImage();
+        this.viewCnt = spot.getViewCnt();
+        this.spotTags = spot.getSpotTags().stream()
                 .map(SpotTagResponse::new).collect(Collectors.toList());
     }
 }

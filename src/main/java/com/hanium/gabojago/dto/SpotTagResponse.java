@@ -1,6 +1,5 @@
 package com.hanium.gabojago.dto;
 
-import com.hanium.gabojago.domain.Spot;
 import com.hanium.gabojago.domain.SpotTag;
 import lombok.Builder;
 import lombok.Getter;
