@@ -10,7 +10,8 @@ import java.util.List;
 public interface SpotRepository extends JpaRepository<Spot, Long> {
     List<Spot> findTop10ByOrderByViewCntDesc();
 
+    Page<Spot> findByRegion(String region, Pageable pageable);
+
     List<Spot> findAllBySpotId(Long spotId);
 
-    Page<Spot> findByRegion(String region, Pageable pageable);
 }

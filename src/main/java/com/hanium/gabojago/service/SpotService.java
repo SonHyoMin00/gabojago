@@ -51,6 +51,7 @@ public class SpotService {
         return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 
+    // 상세 핫플레이스 데이터 가져오기
     public List<SpotResponse> findHotplaceBySpotId(Long spotId){
         List<Spot> spots = spotRepository.findAllBySpotId(spotId);
         return spots.stream().map(SpotResponse::new).collect(Collectors.toList());

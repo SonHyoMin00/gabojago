@@ -31,12 +31,6 @@ public class SpotController {
         return spotService.findHotplaceByViewCnt(page, size);
     }
 
-    // 상세정보 조회
-    @GetMapping("hotplaces/id/{idx}")
-    public List<SpotResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
-        return spotService.findHotplaceBySpotId(id);
-    }
-
     // 지역별 순위 조회
     @GetMapping("region/{region}")
     public List<SpotResponse> getHotplacesByRegion(
@@ -53,5 +47,11 @@ public class SpotController {
             @RequestParam(required = false, defaultValue = "0", value = "page")int page,
             @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
         return spotService.findHotplaceByTag(tagId, page, size);
+    }
+
+    // 상세정보 조회
+    @GetMapping("id/{idx}")
+    public List<SpotResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
+        return spotService.findHotplaceBySpotId(id);
     }
 }
