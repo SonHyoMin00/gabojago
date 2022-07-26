@@ -1,6 +1,7 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.dto.SpotResponse;
 import com.hanium.gabojago.repository.SpotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -21,5 +23,10 @@ public class SpotService {
 
     public Page<Spot> findHotplaceByViewCnt(int page) {
         return spotRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "viewCnt")));
+    }
+
+    public List<SpotResponse> findHotplaceBySpotId(Long spotId){
+        List<Spot> spots = spotRepository.findAllBySpotId(spotId);
+        return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 }

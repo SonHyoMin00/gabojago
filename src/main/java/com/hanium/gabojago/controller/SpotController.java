@@ -1,10 +1,12 @@
 package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.dto.SpotResponse;
 import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +28,12 @@ public class SpotController {
     public Page<Spot> getHotplacesByViewCnt(
             @RequestParam(required = false, defaultValue = "0", value = "page")int page) {
         return spotService.findHotplaceByViewCnt(page);
+    }
+
+    // 상세정보 조회
+    @GetMapping("hotplaces/id/{idx}")
+    public List<SpotResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
+        return spotService.findHotplaceBySpotId(id);
     }
 
 
