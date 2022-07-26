@@ -34,13 +34,16 @@ public class SpotResponse {
     }
 
     public SpotResponse(SpotTag entity) {
-        this.spotId = entity.getSpot().getSpotId();
-        this.spotName = entity.getSpot().getSpotName();
-        this.address = entity.getSpot().getAddress();
-        this.region = entity.getSpot().getRegion();
-        this.detail = entity.getSpot().getDetail();
-        this.tel = entity.getSpot().getTel();
-        this.spotImage = entity.getSpot().getSpotImage();
-        this.viewCnt = entity.getSpot().getViewCnt();
+        Spot spot = entity.getSpot();
+        this.spotId = spot.getSpotId();
+        this.spotName = spot.getSpotName();
+        this.address = spot.getAddress();
+        this.region = spot.getRegion();
+        this.detail = spot.getDetail();
+        this.tel = spot.getTel();
+        this.spotImage = spot.getSpotImage();
+        this.viewCnt = spot.getViewCnt();
+        this.spotTags = spot.getSpotTags().stream()
+                .map(SpotTagResponse::new).collect(Collectors.toList());
     }
 }

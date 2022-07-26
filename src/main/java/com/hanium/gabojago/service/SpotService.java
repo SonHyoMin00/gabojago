@@ -21,11 +21,13 @@ public class SpotService {
     private final SpotRepository spotRepository;
     private final SpotTagRepository spotTagRepository;
 
+    // 실시간 핫플레이스 데이터 가져오기
     public List<SpotResponse> getRealtimeHotplaces() {
         List<Spot> spots = spotRepository.findTop10ByOrderByViewCntDesc();
         return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 
+    // 조회순으로 정렬된 핫플레이스 데이터 가져오기
     public List<SpotResponse> findHotplaceByViewCnt(int page, int size) {
         Page<Spot> spots = spotRepository.findAll(PageRequest.of(
                 page, size, Sort.by(Sort.Direction.DESC, "viewCnt")));
@@ -33,6 +35,7 @@ public class SpotService {
                 .stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 
+    // 지역별 핫플레이스 데이터 가져오기
     public List<SpotResponse> findHotplacesByRegion(String region, int page, int size) {
         Pageable pageable = PageRequest.of(
                 page, size, Sort.by(Sort.Direction.DESC, "viewCnt"));
@@ -41,9 +44,10 @@ public class SpotService {
                 .stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 
-
-    public List<SpotResponse> findHotplaceByTag(int tagId) {
-        List<SpotTag> spots = spotTagRepository.findHotplaceByTag(tagId);
+    // 태그별 핫플레이스 데이터 가져오기
+    public List<SpotResponse> findHotplaceByTag(int tagId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SpotTag> spots = spotTagRepository.findHotplaceByTag(tagId, pageable);
         return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 }

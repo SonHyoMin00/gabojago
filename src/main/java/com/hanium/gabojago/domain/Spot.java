@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString(of = {"spotId", "spotName"})
 @Getter
 @Entity
 public class Spot {
