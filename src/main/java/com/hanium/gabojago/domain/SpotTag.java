@@ -1,6 +1,7 @@
 package com.hanium.gabojago.domain;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
