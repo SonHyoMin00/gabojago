@@ -1,6 +1,7 @@
 package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.dto.SpotResponse;
 import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public class SpotController {
 
     // 상세정보 조회
     @GetMapping("hotplaces/id/{idx}")
-    public List<Spot> daejeonFindHotplace(@PathVariable("idx") Long id ) {
+    public List<SpotResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
     }
 

@@ -37,4 +37,4 @@ out/
 .vscode/
 src/main/resources/application-mjlocal.properties
 src/main/resources/application-service.properties
-src/main/resources/application-hmlocal.properties
+src/main/resources/application-local.properties
