@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Entity
 public class SpotTag {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long spotTagId;
 
     @ManyToOne(fetch = FetchType.LAZY)

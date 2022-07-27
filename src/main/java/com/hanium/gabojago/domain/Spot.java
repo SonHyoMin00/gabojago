@@ -2,10 +2,7 @@ package com.hanium.gabojago.domain;
 
 import lombok.Getter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @Entity
 public class Spot {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long spotId;
 
     @Column
