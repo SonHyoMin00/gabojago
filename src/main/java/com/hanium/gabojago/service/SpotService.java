@@ -39,7 +39,7 @@ public class SpotService {
     public List<SpotResponse> findHotplacesByRegion(String region, int page, int size) {
         Pageable pageable = PageRequest.of(
                 page, size, Sort.by(Sort.Direction.DESC, "viewCnt"));
-        Page<Spot> spots = spotRepository.findByRegion(region, pageable);
+        Page<Spot> spots = spotRepository.findByRegionOrderByViewCntDesc(region, pageable);
         return spots.getContent()
                 .stream().map(SpotResponse::new).collect(Collectors.toList());
     }
@@ -47,8 +47,9 @@ public class SpotService {
     // 태그별 핫플레이스 데이터 가져오기
     public List<SpotResponse> findHotplaceByTag(int tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<SpotTag> spots = spotTagRepository.findHotplaceByTag(tagId, pageable);
-        return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
+        Page<Spot> spots = spotRepository.findHotplaceByTag(tagId, pageable);
+        return spots.getContent()
+                .stream().map(SpotResponse::new).collect(Collectors.toList());
     }
 
     // 상세 핫플레이스 데이터 가져오기
