@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="logback-console.xml"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     <include resource="logback-file.xml"/>
 
-    <root>
+    <root level="info">
         <springProfile name="local">
             <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="File"/>
+            <appender-ref ref="FILE"/>
         </springProfile>
         <springProfile name="service">
-            <appender-ref ref="File"/>
+            <appender-ref ref="FILE"/>
         </springProfile>
     </root>
 </configuration>
