@@ -35,5 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### properties ###
 src/main/resources/application-service.properties
 src/main/resources/application-local.properties
+
+### log ###
+log
