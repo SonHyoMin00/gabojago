@@ -12,5 +12,8 @@
         <springProfile name="service">
             <appender-ref ref="FILE"/>
         </springProfile>
+        <springProfile name="real">
+            <appender-ref ref="CONSOLE"/>
+        </springProfile>
     </root>
 </configuration>
