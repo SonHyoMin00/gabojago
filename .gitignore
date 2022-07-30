@@ -39,6 +39,7 @@ out/
 ### properties ###
 src/main/resources/application-service.properties
 src/main/resources/application-local.properties
+src/main/resources/application-real.properties
 
 ### log ###
 log
