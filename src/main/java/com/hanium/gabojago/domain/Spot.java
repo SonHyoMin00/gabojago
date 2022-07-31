@@ -34,7 +34,7 @@ public class Spot {
     @Column
     Integer viewCnt;
 
-    @OneToMany(mappedBy = "spot")
+    @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
     List<SpotTag> spotTags = new ArrayList<>();
 
 }

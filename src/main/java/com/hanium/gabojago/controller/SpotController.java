@@ -26,7 +26,7 @@ public class SpotController {
 
     // 조회순 조회
     @GetMapping
-    public List<SpotResponse> getHotplacesByViewCnt(
+    public SpotPageResponse getHotplacesByViewCnt(
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
             @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
         return spotService.findHotplacesByViewCnt(page - 1, size);
@@ -34,7 +34,7 @@ public class SpotController {
 
     // 지역별 순위 조회
     @GetMapping("region/{region}")
-    public List<SpotResponse> getHotplacesByRegion(
+    public SpotPageResponse getHotplacesByRegion(
             @PathVariable String region,
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
             @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
