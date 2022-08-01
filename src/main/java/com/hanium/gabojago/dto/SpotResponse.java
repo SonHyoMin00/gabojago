@@ -32,18 +32,4 @@ public class SpotResponse {
         this.spotTags = entity.getSpotTags().stream()
                 .map(SpotTagResponse::new).collect(Collectors.toList());
     }
-
-    public SpotResponse(SpotTag entity) {
-        Spot spot = entity.getSpot();
-        this.spotId = spot.getSpotId();
-        this.spotName = spot.getSpotName();
-        this.address = spot.getAddress();
-        this.region = spot.getRegion();
-        this.detail = spot.getDetail();
-        this.tel = spot.getTel();
-        this.spotImage = spot.getSpotImage();
-        this.viewCnt = spot.getViewCnt();
-        this.spotTags = spot.getSpotTags().stream()
-                .map(SpotTagResponse::new).collect(Collectors.toList());
-    }
 }
