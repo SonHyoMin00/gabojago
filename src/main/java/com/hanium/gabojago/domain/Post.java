@@ -25,6 +25,12 @@ public class Post extends BaseTimeEntity{
     @Column
     private String context;
 
+    @Column
+    private int viewCnt;
+
+    @Column
+    private int greatCnt;
+
     @Builder
     public Post(User user, String title, String context) {
         this.user = user;
