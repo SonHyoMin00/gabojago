@@ -1,7 +1,6 @@
-package com.hanium.gabojago.dto;
+package com.hanium.gabojago.dto.spot;
 
 import com.hanium.gabojago.domain.Spot;
-import com.hanium.gabojago.domain.SpotTag;
 import lombok.Getter;
 import lombok.Setter;
 

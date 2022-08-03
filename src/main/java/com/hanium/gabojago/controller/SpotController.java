@@ -1,7 +1,7 @@
 package com.hanium.gabojago.controller;
 
-import com.hanium.gabojago.dto.SpotPageResponse;
-import com.hanium.gabojago.dto.SpotResponse;
+import com.hanium.gabojago.dto.spot.SpotPageResponse;
+import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,8 +1,8 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Spot;
-import com.hanium.gabojago.dto.SpotPageResponse;
-import com.hanium.gabojago.dto.SpotResponse;
+import com.hanium.gabojago.dto.spot.SpotPageResponse;
+import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.repository.SpotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
