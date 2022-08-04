@@ -5,8 +5,10 @@ import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.post.PostResponse;
 import com.hanium.gabojago.service.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("posts")
 @RestController
@@ -22,7 +24,7 @@ public class PostController {
     }
 
     // 특정 게시글 조회
-    @PostMapping("id/{id}")
+    @GetMapping("id/{id}")
     public PostResponse getPost(@PathVariable Long id) {
         return postService.getPost(id);
     }
@@ -30,17 +32,18 @@ public class PostController {
     // 게시글 작성
     @PostMapping
     public Long createPost(@RequestBody PostCreateRequest postCreateRequest) {
+        log.info(String.valueOf(postCreateRequest));
         return postService.createPost(postCreateRequest);
     }
 
     // 게시글 수정
-    @PostMapping
-    public Long updatePost(@RequestBody PostCreateRequest postCreateRequest) {
-        return postService.updatePost(postCreateRequest);
+    @PutMapping
+    public Long updatePost(@RequestBody PostCreateRequest postCreateRequest, String email) {
+        return postService.updatePost(postCreateRequest, email);
     }
 
     // 게시글 삭제
-    @PostMapping
+    @DeleteMapping
     public Long deletePost(Long id, String email) {
         return postService.deletePost(id, email);
     }
