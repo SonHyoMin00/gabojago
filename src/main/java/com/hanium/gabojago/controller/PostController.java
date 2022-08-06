@@ -33,18 +33,19 @@ public class PostController {
     @PostMapping
     public Long createPost(@RequestBody PostCreateRequest postCreateRequest) {
         log.info(String.valueOf(postCreateRequest));
+        log.info("게시글에 등록 요청된 태그: " + postCreateRequest.getTags().toString());
         return postService.createPost(postCreateRequest);
     }
 
     // 게시글 수정
-    @PutMapping
+    @PutMapping("{id}")
     public Long updatePost(@RequestBody PostCreateRequest postCreateRequest, String email) {
         return postService.updatePost(postCreateRequest, email);
     }
 
     // 게시글 삭제
-    @DeleteMapping
-    public Long deletePost(Long id, String email) {
+    @DeleteMapping("{id}")
+    public Long deletePost(@PathVariable Long id, @RequestParam String email) {
         return postService.deletePost(id, email);
     }
 }
