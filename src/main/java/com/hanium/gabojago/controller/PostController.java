@@ -39,8 +39,10 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("{id}")
-    public Long updatePost(@RequestBody PostCreateRequest postCreateRequest, String email) {
-        return postService.updatePost(postCreateRequest, email);
+    public Long updatePost(@PathVariable Long id,
+                           @RequestBody PostCreateRequest postCreateRequest) {
+
+        return postService.updatePost(id, postCreateRequest);
     }
 
     // 게시글 삭제
