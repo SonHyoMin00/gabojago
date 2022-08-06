@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,7 @@ public class PostService {
     // 특정 게시글 조회
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
-        Post post = postRepository.findById(id)
+        Post post = postRepository.findByIdWithPostTag(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
         return PostResponse.builder()
                 .entity(post)
@@ -96,20 +97,56 @@ public class PostService {
     }
 
     // 게시글 수정
-    public Long updatePost(PostCreateRequest postCreateRequest, String email) {
-        return 0L;
-    }
-
-    // 게시글 삭제
-    public Long deletePost(Long id, String email) {
-        Post post = postRepository.findById(id)
+    @Transactional
+    public Long updatePost(Long id, PostCreateRequest postCreateRequest) {
+        // 1. 게시글 존재 여부 확인
+         Post post = postRepository.findByIdWithPostTag(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
 
-        //요청을 보낸 사용자의 이메일과 post의 이메일이 같은지 검사
+        // 2. 요청을 보낸 사용자(로그인된 사용자)의 이메일과 post의 이메일이 같은지 검사
+        String email = postCreateRequest.getEmail();
         if (!email.equals(post.getUser().getEmail())) {
             throw new IllegalArgumentException("잘못된 접근입니다.");
         }
 
+        // 수정 로직
+        // 3. 기존에 등록된 태그들 삭제
+        List<PostTag> originalPostTags = post.getPostTags();
+        postTagRepository.deleteAllInBatch(originalPostTags);
+
+        // 4. 새로 등록할 태그 조회
+        List<Integer> tags = postCreateRequest.getTags();
+        List<Tag> tagList = tagRepository.findAllById(tags);
+        log.info("tagList: " + tagList);
+
+        // 5. 새로 등록할 postTag 객체 생성
+        List<PostTag> newPostTags = new ArrayList<>();
+        for (Tag tag: tagList) {
+            PostTag postTag = PostTag.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
+            newPostTags.add(postTag);
+        }
+        log.info("수정된 태그: " + newPostTags);
+
+        // 6. post 수정
+        post.updatePost(postCreateRequest, newPostTags);
+        return post.getPostId();
+    }
+
+    // 게시글 삭제
+    public Long deletePost(Long id, String email) {
+        // 1. 게시글 조회
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
+
+        // 2. 요청을 보낸 사용자(로그인된 사용자)의 이메일과 post의 이메일이 같은지 검사
+        if (!email.equals(post.getUser().getEmail())) {
+            throw new IllegalArgumentException("잘못된 접근입니다.");
+        }
+
+        // 3. 게시글 삭제
         postRepository.delete(post);
         return id;
     }
