@@ -1,12 +1,13 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Post;
+import com.hanium.gabojago.domain.PostTag;
+import com.hanium.gabojago.domain.Tag;
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.post.PostCreateRequest;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.post.PostResponse;
-import com.hanium.gabojago.repository.PostRepository;
-import com.hanium.gabojago.repository.UserRepository;
+import com.hanium.gabojago.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
+    private final PostTagRepository postTagRepository;
 
     // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
     // 계속 중복됨: 나중에 인터페이스로 나타내기
@@ -44,12 +47,15 @@ public class PostService {
                 .build();
     }
 
+    // 전체 게시글 조회
+    @Transactional(readOnly = true)
     public PostPageResponse getPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Post> posts = postRepository.findAllSpotsByPage(pageable);
         return convertSPostsToPostPageResponse(posts);
     }
 
+    // 특정 게시글 조회
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
@@ -59,6 +65,7 @@ public class PostService {
                 .build();
     }
 
+    // 게시글 작성
     @Transactional
     public Long createPost(PostCreateRequest postCreateRequest) {
         String email = postCreateRequest.getEmail();
@@ -71,15 +78,29 @@ public class PostService {
                 .context(postCreateRequest.getContext())
                 .build();
 
-        postRepository.save(post);
+        List<Integer> tags = postCreateRequest.getTags();
+        List<Tag> tagList = tagRepository.findAllById(tags);
+        log.info("tagList: " + tagList);
 
+        for (Tag tag: tagList) {
+            PostTag postTag = PostTag.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
+
+            post.getPostTags().add(postTag);
+            log.info("포스트태그: " + postTag);
+        }
+        postRepository.save(post);
         return post.getPostId();
     }
 
+    // 게시글 수정
     public Long updatePost(PostCreateRequest postCreateRequest, String email) {
         return 0L;
     }
 
+    // 게시글 삭제
     public Long deletePost(Long id, String email) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
@@ -92,4 +113,9 @@ public class PostService {
         postRepository.delete(post);
         return id;
     }
+
+//    //이미지 저장 함수
+//    public String saveProfileImage(Long postId, MultipartFile imageFile) {
+//       return null;
+//    }
 }

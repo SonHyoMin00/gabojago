@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
@@ -15,6 +17,7 @@ public class PostResponse {
     private UserPostResponse user;
     private String title;
     private String context;
+    private List<PostTagResponse> postTags;
     private Integer viewCnt;
     private Integer greatCnt;
     private LocalDateTime createdAt;
@@ -27,6 +30,8 @@ public class PostResponse {
                 .build();
         this.title = entity.getTitle();
         this.context = entity.getContext();
+        this.postTags = entity.getPostTags()
+                .stream().map(PostTagResponse::new).collect(Collectors.toList());
         this.viewCnt = entity.getViewCnt();
         this.greatCnt = entity.getGreatCnt();
         this.createdAt = entity.getCreatedAt();
