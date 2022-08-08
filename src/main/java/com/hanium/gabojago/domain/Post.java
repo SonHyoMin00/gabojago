@@ -37,6 +37,9 @@ public class Post extends BaseTimeEntity{
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostTag> postTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Photo> photos = new ArrayList<>();
+
     @Builder
     public Post(User user, String title, String context) {
         this.user = user;
@@ -44,10 +47,9 @@ public class Post extends BaseTimeEntity{
         this.context = context;
     }
 
-    public String updatePost(PostCreateRequest postCreateRequest, List<PostTag> newPostTags) {
+    public void updatePost(PostCreateRequest postCreateRequest, List<PostTag> newPostTags) {
         this.title = postCreateRequest.getTitle();
         this.context = postCreateRequest.getContext();
         this.postTags = newPostTags;
-        return "Success";
     }
 }
