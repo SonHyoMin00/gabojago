@@ -59,7 +59,7 @@ public class PostService {
     // 특정 게시글 조회
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
-        Post post = postRepository.findByIdWithPostTag(id)
+        Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
         return PostResponse.builder()
                 .entity(post)
@@ -92,6 +92,8 @@ public class PostService {
             post.getPostTags().add(postTag);
             log.info("포스트태그: " + postTag);
         }
+
+        // 태그 수만큼 쿼리 추가 발생..! 최적화 필요?
         postRepository.save(post);
         return post.getPostId();
     }
@@ -100,7 +102,7 @@ public class PostService {
     @Transactional
     public Long updatePost(Long id, PostCreateRequest postCreateRequest) {
         // 1. 게시글 존재 여부 확인
-         Post post = postRepository.findByIdWithPostTag(id)
+         Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
 
         // 2. 요청을 보낸 사용자(로그인된 사용자)의 이메일과 post의 이메일이 같은지 검사
@@ -112,7 +114,9 @@ public class PostService {
         // 수정 로직
         // 3. 기존에 등록된 태그들 삭제
         List<PostTag> originalPostTags = post.getPostTags();
-        postTagRepository.deleteAllInBatch(originalPostTags);
+        if (!originalPostTags.isEmpty()) {
+            postTagRepository.deleteAllInBatch(originalPostTags);
+        }
 
         // 4. 새로 등록할 태그 조회
         List<Integer> tags = postCreateRequest.getTags();
@@ -138,7 +142,7 @@ public class PostService {
     // 게시글 삭제
     public Long deletePost(Long id, String email) {
         // 1. 게시글 조회
-        Post post = postRepository.findById(id)
+        Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
 
         // 2. 요청을 보낸 사용자(로그인된 사용자)의 이메일과 post의 이메일이 같은지 검사
@@ -147,6 +151,7 @@ public class PostService {
         }
 
         // 3. 게시글 삭제
+        // on delete cascade 제약조건이라 post만 지워도 post_tag는 알아서 삭제되는데 post_tag 삭제 쿼리가 n개만큼 먼저 나가는 문제
         postRepository.delete(post);
         return id;
     }
