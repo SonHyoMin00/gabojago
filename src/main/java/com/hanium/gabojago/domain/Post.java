@@ -52,4 +52,17 @@ public class Post extends BaseTimeEntity{
         this.context = postCreateRequest.getContext();
         this.postTags = newPostTags;
     }
+
+    public void increaseViewCnt() {
+        this.viewCnt++;
+    }
+
+    public void increaseGreatCnt() {
+        this.greatCnt++;
+    }
+
+    public void decreaseGreatCnt() {
+        if(this.greatCnt == 0) throw new IllegalStateException("Error: 좋아요 수는 음수가 될 수 없습니다.");
+        this.greatCnt--;
+    }
 }

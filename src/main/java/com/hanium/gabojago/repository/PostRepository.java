@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -13,6 +15,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             value = "select p from Post p join fetch p.user",
             countQuery = "select count(p) from Post p")
     Page<Post> findAllSpotsByPage(Pageable pageable);
+
+    //가독성이 매우 나쁘다.....
+    List<Post> findTop3ByCreatedAtBetweenOrderByViewCntDescGreatCntDescCreatedAtAsc(LocalDateTime start, LocalDateTime end);
 
     @Query(value = "select p from Post p join fetch p.user where p.postId=:postId")
     Optional<Post> findByIdWithUser(Long postId);

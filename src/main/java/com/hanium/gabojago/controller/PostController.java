@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("posts")
@@ -21,6 +24,12 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
             @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
         return postService.getPosts(page - 1, size);
+    }
+
+    //매달 top3 게시글 조회
+    @GetMapping("top3")
+    public List<PostResponse> getTop3Posts() {
+        return postService.getTop3Posts();
     }
 
     // 특정 게시글 조회
