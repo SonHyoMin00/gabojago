@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,12 @@ public class SpotService {
     // 상세 핫플레이스 데이터 가져오기
     public List<SpotMapResponse> findHotplaceBySpotId(Long spotId){
         List<Spot> spots = spotRepository.findAllBySpotId(spotId);
+        return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
+    }
+
+    // 사용자 위치기반 데이터 가져오기
+    public List<SpotMapResponse> findLocationBySpotXAndSpotY(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd){
+        List<Spot> spots = spotRepository.findAllBySpotXBetweenAndSpotYBetween(xStart, xEnd, yStart, yEnd);
         return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
     }
 }

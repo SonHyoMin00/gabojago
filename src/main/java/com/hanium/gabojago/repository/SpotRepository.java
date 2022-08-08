@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface SpotRepository extends JpaRepository<Spot, Long> {
@@ -22,4 +23,6 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
     Page<Spot> findHotplaceByTag(@Param(value = "tagId") int tagId, Pageable pageable);
 
     List<Spot> findAllBySpotId(Long spotId);
+
+    List<Spot> findAllBySpotXBetweenAndSpotYBetween(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd);
 }

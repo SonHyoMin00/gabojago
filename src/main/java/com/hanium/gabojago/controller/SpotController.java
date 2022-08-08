@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -55,5 +56,25 @@ public class SpotController {
     @GetMapping("id/{idx}")
     public List<SpotMapResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
+    }
+
+    // 사용자 위치기반 조회 1
+//    @GetMapping("location/{xStart}/{xEnd}/{yStart}/{yEnd}")
+//    public List<SpotMapResponse> findLocationBySpotXAndSpotY(
+//            @PathVariable("xStart")BigDecimal xStart,
+//            @PathVariable("xEnd")BigDecimal xEnd,
+//            @PathVariable("yStart")BigDecimal yStart,
+//            @PathVariable("yEnd")BigDecimal yEnd) {
+//        return spotService.findLocationBySpotXAndSpotY(xStart, xEnd, yStart, yEnd);
+//    }
+
+    // 사용자 위치기반 조회 2
+    @GetMapping("location")
+    public List<SpotMapResponse> findLocationBySpotXAndSpotY(
+            @RequestParam(required = false, defaultValue = "37.55", value = "xStart")BigDecimal xStart,
+            @RequestParam(required = false, defaultValue = "37.65", value = "xEnd")BigDecimal xEnd,
+            @RequestParam(required = false, defaultValue = "126.96", value = "yStart")BigDecimal yStart,
+            @RequestParam(required = false, defaultValue = "126.97", value = "yEnd")BigDecimal yEnd) {
+        return spotService.findLocationBySpotXAndSpotY(xStart, xEnd, yStart, yEnd);
     }
 }
