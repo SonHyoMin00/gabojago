@@ -1,5 +1,6 @@
 package com.hanium.gabojago.controller;
 
+import com.hanium.gabojago.dto.SpotMapResponse;
 import com.hanium.gabojago.dto.SpotPageResponse;
 import com.hanium.gabojago.dto.SpotResponse;
 import com.hanium.gabojago.service.SpotService;
@@ -52,7 +53,7 @@ public class SpotController {
 
     // 상세정보 조회
     @GetMapping("id/{idx}")
-    public List<SpotResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
+    public List<SpotMapResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
     }
 }

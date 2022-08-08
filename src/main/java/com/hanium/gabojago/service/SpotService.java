@@ -1,6 +1,7 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.dto.SpotMapResponse;
 import com.hanium.gabojago.dto.SpotPageResponse;
 import com.hanium.gabojago.dto.SpotResponse;
 import com.hanium.gabojago.repository.SpotRepository;
@@ -65,8 +66,8 @@ public class SpotService {
     }
 
     // 상세 핫플레이스 데이터 가져오기
-    public List<SpotResponse> findHotplaceBySpotId(Long spotId){
+    public List<SpotMapResponse> findHotplaceBySpotId(Long spotId){
         List<Spot> spots = spotRepository.findAllBySpotId(spotId);
-        return spots.stream().map(SpotResponse::new).collect(Collectors.toList());
+        return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
     }
 }
