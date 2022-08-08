@@ -1,7 +1,14 @@
 package com.hanium.gabojago.domain;
 
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Great {
     @Id
@@ -13,6 +20,12 @@ public class Great {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "post_id")
     private Post post;
+
+    @Builder
+    public Great(User user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
 }

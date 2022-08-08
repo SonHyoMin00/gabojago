@@ -17,6 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,11 +59,31 @@ public class PostService {
         return convertSPostsToPostPageResponse(posts);
     }
 
-    // 특정 게시글 조회
+    //매달 top3 게시글 조회
     @Transactional(readOnly = true)
+    public List<PostResponse> getTop3Posts() {
+        int year = LocalDate.now().getYear();
+        int preMonth = LocalDate.now().getMonthValue() - 1;
+        if(preMonth == 0) {
+            preMonth = 12;
+            year--;
+        }
+        LocalDate startDate = LocalDate.of(year, preMonth, 1);
+        LocalDateTime start = LocalDateTime.of(startDate, LocalTime.MIN);
+        LocalDate endDate = startDate.plusDays(startDate.lengthOfMonth() - 1);
+        LocalDateTime end = LocalDateTime.of(endDate, LocalTime.MAX);
+
+        List<Post> posts = postRepository
+                .findTop3ByCreatedAtBetweenOrderByViewCntDescGreatCntDescCreatedAtAsc(start, end);
+        return posts.stream().map(PostResponse::new).collect(Collectors.toList());
+    }
+
+    // 특정 게시글 조회
+    @Transactional
     public PostResponse getPost(Long id) {
         Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
+        post.increaseViewCnt();
         return PostResponse.builder()
                 .entity(post)
                 .build();
