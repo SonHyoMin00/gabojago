@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -58,5 +57,13 @@ public class PostController {
     @DeleteMapping("{id}")
     public Long deletePost(@PathVariable Long id, @RequestParam String email) {
         return postService.deletePost(id, email);
+    }
+
+    //특정 유저의 게시글 조회(마이페이지)
+    @GetMapping("user")
+    public PostPageResponse userPosts(@RequestParam String email,
+                                      @RequestParam(required = false, defaultValue = "1", value = "page")int page,
+                                      @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
+        return postService.getUserPosts(email, page - 1, size);
     }
 }
