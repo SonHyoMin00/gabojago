@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -177,6 +178,17 @@ public class PostService {
         // on delete cascade 제약조건이라 post만 지워도 post_tag는 알아서 삭제되는데 post_tag 삭제 쿼리가 n개만큼 먼저 나가는 문제
         postRepository.delete(post);
         return id;
+    }
+
+    // 사용자 게시글 조회(마이페이지)
+    public PostPageResponse getUserPosts(String email, int page, int size) {
+        // 1. 요청을 보낸 사용자 확인(임시코드)
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 접근입니다."));
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Post> posts = postRepository.findAllByUser(user, pageable);
+        return convertSPostsToPostPageResponse(posts);
     }
 
 //    //이미지 저장 함수
