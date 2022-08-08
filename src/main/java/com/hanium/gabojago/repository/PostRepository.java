@@ -15,5 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllSpotsByPage(Pageable pageable);
 
     @Query(value = "select p from Post p join fetch p.user where p.postId=:postId")
-    Optional<Post> findByIdWithPostTag(Long postId);
+    Optional<Post> findByIdWithUser(Long postId);
 }
