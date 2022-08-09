@@ -1,10 +1,8 @@
 package com.hanium.gabojago.service;
 
-import com.hanium.gabojago.domain.Post;
-import com.hanium.gabojago.domain.PostTag;
-import com.hanium.gabojago.domain.Tag;
-import com.hanium.gabojago.domain.User;
+import com.hanium.gabojago.domain.*;
 import com.hanium.gabojago.dto.post.PostCreateRequest;
+import com.hanium.gabojago.dto.post.PostDetailResponse;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.post.PostResponse;
 import com.hanium.gabojago.repository.*;
@@ -22,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,6 +31,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
+    private final GreatRepository greatRepository;
 
     // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
     // 계속 중복됨: 나중에 인터페이스로 나타내기
@@ -74,19 +74,27 @@ public class PostService {
         LocalDateTime end = LocalDateTime.of(endDate, LocalTime.MAX);
 
         List<Post> posts = postRepository
-                .findTop3ByCreatedAtBetweenOrderByViewCntDescGreatCntDescCreatedAtAsc(start, end);
+                .findTop3ByCreatedAtBetweenOrderByGreatCntDescViewCntDescCreatedAtAsc(start, end);
         return posts.stream().map(PostResponse::new).collect(Collectors.toList());
     }
 
     // 특정 게시글 조회
     @Transactional
-    public PostResponse getPost(Long id) {
+    public PostResponse getPost(Long id, String email) {
         Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
         post.increaseViewCnt();
-        return PostResponse.builder()
-                .entity(post)
-                .build();
+
+        // 로그인 한 상태인지 확인 -> 로그인 했다면 좋아요 여부 조회, 로그인 하지 않았다면 조회 없이 무조건 false
+        boolean greatState = false;
+        log.info("전달받은 이메일: " + email);
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()) {
+            Optional<Great> great = greatRepository.findByUserAndPost(post.getUser(), post);
+            greatState = great.isPresent();
+        }
+
+        return new PostDetailResponse(post, greatState);
     }
 
     // 게시글 작성
