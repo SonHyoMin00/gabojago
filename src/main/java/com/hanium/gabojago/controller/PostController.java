@@ -17,7 +17,7 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    // 전체 게시글 조회(회원이면 - 게시글마다 좋아요 표시 여부를 함께 리턴, 비회원이면 - 모든 게시글의 좋아요 표시를 false로 리턴)
+    // 전체 게시글 조회
     @GetMapping
     public PostPageResponse getPosts(
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
@@ -33,8 +33,8 @@ public class PostController {
 
     // 특정 게시글 조회(회원이면 - 좋아요 표시 여부를 함께 리턴, 비회원이면 - 좋아요 표시를 false로 리턴)
     @GetMapping("{id}")
-    public PostResponse getPost(@PathVariable Long id) {
-        return postService.getPost(id);
+    public PostResponse getPost(@PathVariable Long id, @RequestParam(required = false) String email) {
+        return postService.getPost(id, email);
     }
 
     // 게시글 작성

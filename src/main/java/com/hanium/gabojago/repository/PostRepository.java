@@ -19,7 +19,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllSpotsByPage(Pageable pageable);
 
     //가독성이 매우 나쁘다.....
-    List<Post> findTop3ByCreatedAtBetweenOrderByViewCntDescGreatCntDescCreatedAtAsc(LocalDateTime start, LocalDateTime end);
+    List<Post> findTop3ByCreatedAtBetweenOrderByGreatCntDescViewCntDescCreatedAtAsc(LocalDateTime start, LocalDateTime end);
 
     @Query(value = "select p from Post p join fetch p.user where p.postId=:postId")
     Optional<Post> findByIdWithUser(Long postId);
