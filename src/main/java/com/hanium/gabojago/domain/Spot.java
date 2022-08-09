@@ -44,4 +44,7 @@ public class Spot {
     @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
     List<SpotTag> spotTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
+    List<Bookmark> bookmarks = new ArrayList<>();
+
 }
