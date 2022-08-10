@@ -6,7 +6,9 @@ import com.hanium.gabojago.dto.post.PostResponse;
 import com.hanium.gabojago.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,18 +40,21 @@ public class PostController {
     }
 
     // 게시글 작성
-    @PostMapping
-    public Long createPost(@RequestBody PostCreateRequest postCreateRequest) {
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public Long createPost(@RequestPart(name = "request") PostCreateRequest postCreateRequest,
+                           @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+        postCreateRequest.setFiles(files);
         log.info(String.valueOf(postCreateRequest));
-        log.info("게시글에 등록 요청된 태그: " + postCreateRequest.getTags().toString());
+        log.info("게시글에 첨부된 파일: " + files.size());
         return postService.createPost(postCreateRequest);
     }
 
     // 게시글 수정
     @PutMapping("{id}")
     public Long updatePost(@PathVariable Long id,
-                           @RequestBody PostCreateRequest postCreateRequest) {
-
+                           @RequestPart(name = "request") PostCreateRequest postCreateRequest,
+                           @RequestPart List<MultipartFile> files) {
+        postCreateRequest.setFiles(files);
         return postService.updatePost(id, postCreateRequest);
     }
 

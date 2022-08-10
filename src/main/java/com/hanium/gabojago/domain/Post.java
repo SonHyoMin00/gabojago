@@ -65,4 +65,5 @@ public class Post extends BaseTimeEntity{
         if(this.greatCnt == 0) throw new IllegalStateException("Error: 좋아요 수는 음수가 될 수 없습니다.");
         this.greatCnt--;
     }
+
 }

@@ -5,6 +5,7 @@ import com.hanium.gabojago.dto.post.PostCreateRequest;
 import com.hanium.gabojago.dto.post.PostDetailResponse;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.post.PostResponse;
+import com.hanium.gabojago.handler.FileHandler;
 import com.hanium.gabojago.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
     private final GreatRepository greatRepository;
+    private final FileHandler fileHandler;
 
     // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
     // 계속 중복됨: 나중에 인터페이스로 나타내기
@@ -124,6 +126,11 @@ public class PostService {
             log.info("포스트태그: " + postTag);
         }
 
+        // 첨부파일(이미지) 처리
+        List<Photo> photos = fileHandler.parseFileInfo(postCreateRequest.getFiles(), post);
+        post.getPhotos().addAll(photos);
+
+        log.info("파일 리스트: " + photos);
         // 태그 수만큼 쿼리 추가 발생..! 최적화 필요?
         postRepository.save(post);
         return post.getPostId();
