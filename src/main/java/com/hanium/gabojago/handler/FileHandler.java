@@ -73,7 +73,7 @@ public class FileHandler {
                 // 파일 DTO 이용하여 Photo 엔티티 생성
                 Photo photo = Photo.builder()
                         .post(post)
-                        .fileName(path + File.separator + new_file_name)
+                        .fileName(absolutePath + path + File.separator + new_file_name)
                         .originalName(multipartFile.getOriginalFilename())
                         .fileSize(multipartFile.getSize()).build();
 
@@ -88,10 +88,6 @@ public class FileHandler {
                 } catch (Exception e) {
                     throw new IllegalArgumentException(e);
                 }
-
-                // 파일 권한 설정(쓰기, 읽기)
-//                file.setWritable(true);
-                file.setReadable(true);
             }
         }
 
