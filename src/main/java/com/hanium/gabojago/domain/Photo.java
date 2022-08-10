@@ -1,12 +1,10 @@
 package com.hanium.gabojago.domain;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
+@ToString(exclude = {"post"})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -23,12 +21,17 @@ public class Photo {
     @Column
     private String fileName;
 
-    @Builder
-    public Photo(String fileName) {
-        this.fileName = fileName;
-    }
+    @Column
+    private String originalName;
 
-    public void setPost(Post post) {
+    @Column
+    private Long fileSize;
+
+    @Builder
+    public Photo(Post post, String fileName, String originalName, Long fileSize) {
         this.post = post;
+        this.fileName = fileName;
+        this.originalName = originalName;
+        this.fileSize = fileSize;
     }
 }
