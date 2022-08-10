@@ -1,9 +1,7 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Spot;
-import com.hanium.gabojago.dto.SpotMapResponse;
-import com.hanium.gabojago.dto.SpotPageResponse;
-import com.hanium.gabojago.dto.SpotResponse;
+import com.hanium.gabojago.dto.*;
 import com.hanium.gabojago.repository.SpotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,5 +74,35 @@ public class SpotService {
     public List<SpotMapResponse> findLocationBySpotXAndSpotY(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd){
         List<Spot> spots = spotRepository.findAllBySpotXBetweenAndSpotYBetween(xStart, xEnd, yStart, yEnd);
         return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
+    }
+
+    // 북마크 정보 가져오기
+    public List<SpotBookmarkResponse> findBookmarkBySpotId(Long spotId){
+        List<Spot> spots = spotRepository.findAllBySpotId(spotId);
+        return spots.stream().map(SpotBookmarkResponse::new).collect(Collectors.toList());
+    }
+
+    //Page<Spot>을 SpotBookmarkPageResponse(dto)로 바꾸는 함수
+    private SpotBookmarkPageResponse convertSpotsToSpotBookmarkPageResponse(Page<Spot> spots) {
+        //총 페이지 수
+        int totalPages = spots.getTotalPages();
+        log.info("총 페이지 수: " + spots.getTotalPages());
+
+        //spotBookmarkResponses DTO로 변환
+        List<SpotBookmarkResponse> spotBookmarkResponses = spots.getContent()
+                .stream().map(SpotBookmarkResponse::new).collect(Collectors.toList());
+
+        // 총 페이지 수 추가하여 반환
+        return SpotBookmarkPageResponse.builder()
+                .spotBookmarkResponses(spotBookmarkResponses)
+                .totalPages(totalPages)
+                .build();
+    }
+
+    // 북마크 순 데이터 가져오기
+    public  SpotBookmarkPageResponse findBookmarkGroupBySpotId(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Spot> spots = spotRepository.findAllByBookmarkGroupBySpotId(pageable);
+        return convertSpotsToSpotBookmarkPageResponse(spots);
     }
 }

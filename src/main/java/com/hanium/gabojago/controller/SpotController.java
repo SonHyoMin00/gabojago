@@ -1,8 +1,6 @@
 package com.hanium.gabojago.controller;
 
-import com.hanium.gabojago.dto.SpotMapResponse;
-import com.hanium.gabojago.dto.SpotPageResponse;
-import com.hanium.gabojago.dto.SpotResponse;
+import com.hanium.gabojago.dto.*;
 import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,4 +75,20 @@ public class SpotController {
             @RequestParam(required = false, defaultValue = "126.97", value = "yEnd")BigDecimal yEnd) {
         return spotService.findLocationBySpotXAndSpotY(xStart, xEnd, yStart, yEnd);
     }
+
+    // 상세정보 조회
+    @GetMapping("bookmark/{idx}")
+    public List<SpotBookmarkResponse> findBookmarkBySpotId(@PathVariable("idx") Long id ) {
+        return spotService.findBookmarkBySpotId(id);
+    }
+
+    // 북마크 순 조회
+    @GetMapping("bookmark")
+    public SpotBookmarkPageResponse findBookmarkGroupBySpotId(
+            @RequestParam(required = false, defaultValue = "1", value = "page")int page,
+            @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
+        return spotService.findBookmarkGroupBySpotId(page - 1, size);
+    }
+
+
 }
