@@ -52,8 +52,8 @@ public class PostController {
     // 게시글 수정
     @PutMapping("{id}")
     public Long updatePost(@PathVariable Long id,
-                           @RequestPart(name = "request") PostCreateRequest postCreateRequest,
-                           @RequestPart List<MultipartFile> files) {
+                           @RequestPart PostCreateRequest postCreateRequest,
+                           @RequestPart(required = false) List<MultipartFile> files) {
         postCreateRequest.setFiles(files);
         return postService.updatePost(id, postCreateRequest);
     }
