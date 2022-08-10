@@ -50,7 +50,7 @@ public class Post extends BaseTimeEntity{
     public void updatePost(PostCreateRequest postCreateRequest, List<PostTag> newPostTags) {
         this.title = postCreateRequest.getTitle();
         this.context = postCreateRequest.getContext();
-        this.postTags = newPostTags;
+        this.postTags.addAll(newPostTags);
     }
 
     public void increaseViewCnt() {
