@@ -128,9 +128,9 @@ public class PostService {
 
         // 첨부파일(이미지) 처리
         List<Photo> photos = fileHandler.parseFileInfo(postCreateRequest.getFiles(), post);
-        post.getPhotos().addAll(photos);
-
+        if(!photos.isEmpty()) post.getPhotos().addAll(photos);
         log.info("파일 리스트: " + photos);
+
         // 태그 수만큼 쿼리 추가 발생..! 최적화 필요?
         postRepository.save(post);
         return post.getPostId();

@@ -45,7 +45,6 @@ public class PostController {
                            @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         postCreateRequest.setFiles(files);
         log.info(String.valueOf(postCreateRequest));
-        log.info("게시글에 첨부된 파일: " + files.size());
         return postService.createPost(postCreateRequest);
     }
 
