@@ -204,9 +204,4 @@ public class PostService {
         Page<Post> posts = postRepository.findAllByUser(user, pageable);
         return convertSPostsToPostPageResponse(posts);
     }
-
-//    //이미지 저장 함수
-//    public String saveProfileImage(Long postId, MultipartFile imageFile) {
-//       return null;
-//    }
 }
