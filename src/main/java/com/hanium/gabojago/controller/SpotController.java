@@ -3,11 +3,7 @@ package com.hanium.gabojago.controller;
 import com.hanium.gabojago.dto.*;
 import com.hanium.gabojago.service.SpotService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -90,5 +86,9 @@ public class SpotController {
         return spotService.findBookmarkGroupBySpotId(page - 1, size);
     }
 
+    @PostMapping("bookmark")
+    public Long saveBookmark(@RequestBody BookmarkSaveRequest bookmarkSaveRequest){
+        return spotService.saveBookmark(bookmarkSaveRequest);
+    }
 
 }

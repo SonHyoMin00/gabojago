@@ -1,14 +1,19 @@
 package com.hanium.gabojago.service;
 
+import com.hanium.gabojago.domain.Bookmark;
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.*;
+import com.hanium.gabojago.repository.BookmarkRepository;
 import com.hanium.gabojago.repository.SpotRepository;
+import com.hanium.gabojago.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,6 +24,8 @@ import java.util.stream.Collectors;
 @Service
 public class SpotService {
     private final SpotRepository spotRepository;
+    private final UserRepository userRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     //Page<Spot>을 SpotPageResponse(dto)로 바꾸는 함수
     private SpotPageResponse convertSpotsToSpotPageResponse(Page<Spot> spots) {
@@ -104,5 +111,21 @@ public class SpotService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Spot> spots = spotRepository.findAllByBookmarkGroupBySpotId(pageable);
         return convertSpotsToSpotBookmarkPageResponse(spots);
+    }
+
+    @Transactional
+    public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest){
+        String email = bookmarkSaveRequest.getEmail();
+        User user = userRepository.findByEmail(email);
+
+        Long spotId = bookmarkSaveRequest.getSpotId();
+        Spot spot = spotRepository.findBySpotId(spotId);
+
+        Bookmark bookmark = Bookmark.builder()
+                .spot(spot)
+                .user(user)
+                .build();
+
+        return bookmarkRepository.save(bookmark).getBookmarkId();
     }
 }
