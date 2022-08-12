@@ -91,4 +91,9 @@ public class SpotController {
         return spotService.saveBookmark(bookmarkSaveRequest);
     }
 
+    @DeleteMapping("bookmark/{id}")
+    public Long deleteBookmark(@PathVariable Long id, @RequestParam String email) {
+        return spotService.deleteBookmark(id, email);
+    }
+
 }

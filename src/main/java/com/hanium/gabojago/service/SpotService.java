@@ -1,6 +1,7 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Bookmark;
+import com.hanium.gabojago.domain.Post;
 import com.hanium.gabojago.domain.Spot;
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.*;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Book;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -116,10 +118,10 @@ public class SpotService {
     @Transactional
     public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest){
         String email = bookmarkSaveRequest.getEmail();
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email); //에러처리 필요
 
         Long spotId = bookmarkSaveRequest.getSpotId();
-        Spot spot = spotRepository.findBySpotId(spotId);
+        Spot spot = spotRepository.findBySpotId(spotId);//에러처리 필요
 
         Bookmark bookmark = Bookmark.builder()
                 .spot(spot)
@@ -127,5 +129,17 @@ public class SpotService {
                 .build();
 
         return bookmarkRepository.save(bookmark).getBookmarkId();
+    }
+
+    public Long deleteBookmark(Long id, String email){
+        Bookmark bookmark = bookmarkRepository.findByBookmarkId(id); //에러처리 필요
+
+        User user = userRepository.findByEmail(email);
+        if (!email.equals(user.getEmail())) {
+            throw new IllegalArgumentException("해당 이메일의 사용자가 없습니다.");
+        }
+        bookmarkRepository.delete(bookmark);
+
+        return id;
     }
 }
