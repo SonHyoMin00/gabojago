@@ -1,7 +1,6 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.User;
-import com.hanium.gabojago.jwt.UserDetailsImpl;
 import com.hanium.gabojago.oauth.kakao.KakaoOAuth2;
 import com.hanium.gabojago.oauth.kakao.KakaoUserDto;
 import com.hanium.gabojago.repository.UserRepository;
@@ -34,7 +33,15 @@ public class UserService {
 
             userRepository.save(newUser);
         }
-        else throw new IllegalStateException("이미 회원가입한 유저입니다.");
+        else
+            throw new IllegalStateException("이미 회원가입한 유저입니다.");
+    }
+
+    // authorizedCode로 가입된 사용자 조회
+    public User findUserByAuthorizedCode(String authorizedCode) {
+        String email = kakaoOAuth2.getUserEmail(authorizedCode);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 \"" + email + "\"에 해당하는 사용자가 존재하지 않습니다."));
     }
 
 }

@@ -1,7 +1,6 @@
 package com.hanium.gabojago.jwt;
 
 import com.hanium.gabojago.domain.User;
-import com.hanium.gabojago.jwt.UserDetailsImpl;
 import com.hanium.gabojago.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

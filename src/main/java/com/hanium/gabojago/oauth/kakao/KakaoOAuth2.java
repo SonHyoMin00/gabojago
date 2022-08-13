@@ -16,15 +16,6 @@ public class KakaoOAuth2 {
     @Value("${oauth2.kakao.client-id}")
     String clientId;
 
-    public KakaoUserDto getUserInfo(String authorizedCode) {
-        // 1. 인가코드 -> 액세스 토큰
-        String accessToken = getAccessToken(authorizedCode);
-        // 2. 액세스 토큰 -> 카카오 사용자 정보
-        KakaoUserDto user = getUseroByToken(accessToken);
-
-        return user;
-    }
-
     private String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +34,7 @@ public class KakaoOAuth2 {
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(params, headers);
 
-        // Http 요청하기 - Post방식으로 - 그리고 response 변수의 응답 받음.
+        // Http 요청
         ResponseEntity<String> response = rt.exchange(
                 "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
@@ -57,8 +48,7 @@ public class KakaoOAuth2 {
         return json.getString("access_token");
     }
 
-    private KakaoUserDto getUseroByToken(String accessToken) {
-        // HttpHeader 오브젝트 생성
+    private JSONObject requestUserInfoJsonObject(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -67,7 +57,7 @@ public class KakaoOAuth2 {
         RestTemplate rt = new RestTemplate();
         HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest = new HttpEntity<>(headers);
 
-        // Http 요청하기 - Post방식으로 - 그리고 response 변수의 응답 받음.
+        // Http 요청하기
         ResponseEntity<String> response = rt.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
@@ -75,8 +65,14 @@ public class KakaoOAuth2 {
                 String.class
         );
 
-        JSONObject body = new JSONObject(response.getBody());
-        Long id = body.getLong("id");
+        // 사용자 정보 json 객체 리턴
+        return new JSONObject(response.getBody());
+    }
+
+    private KakaoUserDto getUserByAccessToken(String accessToken) {
+        JSONObject body = requestUserInfoJsonObject(accessToken);
+
+        // 유저 정보 파싱
         JSONObject kakaoAccount = body.getJSONObject("kakao_account");
         JSONObject profile = kakaoAccount.getJSONObject("profile");
         String email = kakaoAccount.getString("email");
@@ -108,5 +104,22 @@ public class KakaoOAuth2 {
                 .age(age)
                 .profilePhoto(profilePhoto)
                 .build();
+    }
+
+    public KakaoUserDto getUserInfo(String authorizedCode) {
+        // 1. 인가코드 -> 액세스 토큰
+        String accessToken = getAccessToken(authorizedCode);
+        // 2. 액세스 토큰 -> 카카오 사용자 정보
+        KakaoUserDto user = getUserByAccessToken(accessToken);
+
+        return user;
+    }
+
+    public String getUserEmail(String authorizedCode) {
+        String accessToken = getAccessToken(authorizedCode);
+        // HttpHeader 오브젝트 생성
+        JSONObject body = requestUserInfoJsonObject(accessToken);
+        // 사용자 이메일 리턴
+        return body.getJSONObject("kakao_account").getString("email");
     }
 }
