@@ -47,4 +47,8 @@ public class Spot {
     @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
     List<Bookmark> bookmarks = new ArrayList<>();
 
+    public void addViewCnt() {
+        this.viewCnt++;
+    }
+
 }

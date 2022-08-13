@@ -74,7 +74,11 @@ public class SpotService {
     }
 
     // 상세 핫플레이스 데이터 가져오기
+    @Transactional
     public List<SpotMapResponse> findHotplaceBySpotId(Long spotId){
+        Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 사용자가 없습니다."));
+        spot.addViewCnt();
+
         List<Spot> spots = spotRepository.findAllBySpotId(spotId);
         return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
     }
@@ -118,10 +122,11 @@ public class SpotService {
     @Transactional
     public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest){
         String email = bookmarkSaveRequest.getEmail();
-        User user = userRepository.findByEmail(email); //에러처리 필요
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 없습니다."));
 
         Long spotId = bookmarkSaveRequest.getSpotId();
-        Spot spot = spotRepository.findBySpotId(spotId);//에러처리 필요
+        Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 사용자가 없습니다."));
 
         Bookmark bookmark = Bookmark.builder()
                 .spot(spot)
@@ -132,9 +137,11 @@ public class SpotService {
     }
 
     public Long deleteBookmark(Long id, String email){
-        Bookmark bookmark = bookmarkRepository.findByBookmarkId(id); //에러처리 필요
+        Bookmark bookmark = bookmarkRepository.findByBookmarkId(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 사용자가 없습니다."));
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 없습니다."));
         if (!email.equals(user.getEmail())) {
             throw new IllegalArgumentException("해당 이메일의 사용자가 없습니다.");
         }
