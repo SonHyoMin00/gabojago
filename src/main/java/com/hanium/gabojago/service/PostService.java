@@ -82,16 +82,15 @@ public class PostService {
 
     // 특정 게시글 조회
     @Transactional
-    public PostResponse getPost(Long id, String email) {
+    public PostResponse getPost(Long id, User user) {
         Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
         post.increaseViewCnt();
 
         // 로그인 한 상태인지 확인 -> 로그인 했다면 좋아요 여부 조회, 로그인 하지 않았다면 조회 없이 무조건 false
         boolean greatState = false;
-        log.info("전달받은 이메일: " + email);
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()) {
+        log.info("사용자: " + user);
+        if(user != null) {
             Optional<Great> great = greatRepository.findByUserAndPost(post.getUser(), post);
             greatState = great.isPresent();
         }
@@ -101,11 +100,7 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public Long createPost(PostCreateRequest postCreateRequest) {
-        String email = postCreateRequest.getEmail();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new IllegalArgumentException("이메일 \"" + email + "\"에 해당하는 사용자가 존재하지 않습니다."));
-
+    public Long createPost(PostCreateRequest postCreateRequest, User user) {
         Post post = Post.builder()
                 .user(user)
                 .title(postCreateRequest.getTitle())
@@ -138,14 +133,13 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public Long updatePost(Long id, PostCreateRequest postCreateRequest) {
+    public Long updatePost(Long id, PostCreateRequest postCreateRequest, User user) {
         // 1. 게시글 존재 여부 확인
          Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
 
-        // 2. 요청을 보낸 사용자(로그인된 사용자)의 이메일과 post의 이메일이 같은지 검사
-        String email = postCreateRequest.getEmail();
-        if (!email.equals(post.getUser().getEmail())) {
+        // 2. 요청을 보낸 사용자가 post 작성자와 같은지 검사
+        if (!user.equals(post.getUser())) {
             throw new IllegalArgumentException("잘못된 접근입니다.");
         }
 
@@ -178,13 +172,13 @@ public class PostService {
     }
 
     // 게시글 삭제
-    public Long deletePost(Long id, String email) {
+    public Long deletePost(Long id, User user) {
         // 1. 게시글 조회
         Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
 
         // 2. 요청을 보낸 사용자(로그인된 사용자)의 이메일과 post의 이메일이 같은지 검사
-        if (!email.equals(post.getUser().getEmail())) {
+        if (!user.equals(post.getUser())) {
             throw new IllegalArgumentException("잘못된 접근입니다.");
         }
 
@@ -195,11 +189,7 @@ public class PostService {
     }
 
     // 사용자 게시글 조회(마이페이지)
-    public PostPageResponse getUserPosts(String email, int page, int size) {
-        // 1. 요청을 보낸 사용자 확인(임시코드)
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 접근입니다."));
-
+    public PostPageResponse getUserPosts(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Post> posts = postRepository.findAllByUser(user, pageable);
         return convertSPostsToPostPageResponse(posts);

@@ -40,6 +40,8 @@ out/
 src/main/resources/application-service.properties
 src/main/resources/application-local.properties
 src/main/resources/application-real.properties
+src/main/resources/application-jwt.properties
+src/main/resources/application-oauth.properties
 
 ### log ###
 log

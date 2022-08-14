@@ -21,12 +21,17 @@ public class User extends BaseTimeEntity{
     @Column
     private String name;
 
-    @Column Byte age;
+    @Column
+    private Byte age;
+
+    @Column
+    private String profilePhoto;
 
     @Builder
-    public User(String email, String name, Byte age) {
+    public User(String email, String name, Byte age, String profilePhoto) {
         this.email = email;
         this.name = name;
         this.age = age;
+        this.profilePhoto = profilePhoto;
     }
 }
