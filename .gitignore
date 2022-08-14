@@ -43,5 +43,7 @@ src/main/resources/application-real.properties
 src/main/resources/application-jwt.properties
 src/main/resources/application-oauth.properties
 
+src/main/resources/static/index.html
+
 ### log ###
 log
