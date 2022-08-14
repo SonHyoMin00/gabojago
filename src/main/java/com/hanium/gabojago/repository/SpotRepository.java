@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface SpotRepository extends JpaRepository<Spot, Long> {
     List<Spot> findTop10ByOrderByViewCntDesc();
@@ -22,4 +24,11 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
     Page<Spot> findHotplaceByTag(@Param(value = "tagId") int tagId, Pageable pageable);
 
     List<Spot> findAllBySpotId(Long spotId);
+
+    List<Spot> findAllBySpotXBetweenAndSpotYBetween(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd);
+
+    @Query(value = "select s from Spot s order by s.bookmarks.size desc")
+    Page<Spot> findAllByBookmarkGroupBySpotId(Pageable pageable);
+
+    Optional<Spot> findBySpotId(Long spotId);
 }
