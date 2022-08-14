@@ -23,8 +23,8 @@ public class BaseTimeEntityTest {
     @BeforeEach
     void setUser() {
         User user = User.builder()
-                .email("user@gabojago.com")
-                .name("user")
+                .email("testUser@gabojago.com")
+                .name("testUser")
                 .age((byte) 20)
                 .build();
 
@@ -35,10 +35,10 @@ public class BaseTimeEntityTest {
     @DisplayName("User클래스에서 JpaAudigint 테스트")
     void UserTest() {
         // when
-        User found = userRepository.findByEmail("user@gabojago.com");
+        User found = userRepository.findByEmail("testUser@gabojago.com").get();
 
         // then
-        assertThat(found.getName()).isEqualTo("user");
+        assertThat(found.getName()).isEqualTo("testUser");
         assertThat(found.getCreatedAt()).isNotNull();
         assertThat(found.getModifiedAt()).isNotNull();
     }
@@ -47,19 +47,19 @@ public class BaseTimeEntityTest {
     @DisplayName("Post클래스에서 JpaAudigint 테스트")
     void PostTest() {
         // given
-        User found = userRepository.findByEmail("user@gabojago.com");
+        User found = userRepository.findByEmail("testUser@gabojago.com").get();
         Post post = Post.builder()
                 .user(found)
-                .title("post")
-                .context("postContext")
+                .title("testPost")
+                .context("testContext")
                 .build();
 
         // when
         Post savedPost = postRepository.save(post);
 
         // then
-        assertThat(savedPost.getTitle()).isEqualTo("post");
-        assertThat(savedPost.getContext()).isEqualTo("postContext");
+        assertThat(savedPost.getTitle()).isEqualTo("testPost");
+        assertThat(savedPost.getContext()).isEqualTo("testContext");
         assertThat(savedPost.getCreatedAt()).isNotNull();
         assertThat(savedPost.getModifiedAt()).isNotNull();
     }

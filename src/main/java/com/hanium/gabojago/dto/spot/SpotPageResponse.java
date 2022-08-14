@@ -1,4 +1,4 @@
-package com.hanium.gabojago.dto;
+package com.hanium.gabojago.dto.spot;
 
 import lombok.Builder;
 import lombok.Getter;

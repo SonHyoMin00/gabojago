@@ -1,7 +1,7 @@
 package com.hanium.gabojago.dto;
 
 import com.hanium.gabojago.domain.Spot;
-import com.hanium.gabojago.domain.SpotTag;
+import com.hanium.gabojago.dto.spot.SpotTagResponse;
 import lombok.Getter;
 import lombok.Setter;
 
