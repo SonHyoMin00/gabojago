@@ -32,12 +32,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .formLogin().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers("/hotplaces/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/posts/**").permitAll()
                 .antMatchers("/users/kakao/**").permitAll()
-                .antMatchers("/test2").permitAll()
-                .antMatchers("/").permitAll()
+                .antMatchers("/test2", "/").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
