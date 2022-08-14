@@ -1,12 +1,16 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.User;
+import com.hanium.gabojago.jwt.JwtProperties;
 import com.hanium.gabojago.oauth.kakao.KakaoOAuth2;
 import com.hanium.gabojago.oauth.kakao.KakaoUserDto;
 import com.hanium.gabojago.repository.UserRepository;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -44,4 +48,12 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("이메일 \"" + email + "\"에 해당하는 사용자가 존재하지 않습니다."));
     }
 
+    public User findUserByJwtToken(String token) {
+        log.info("-----JWT:" + token);
+        log.info("-----secretKey:" + JwtProperties.SECRETKEY);
+        String email = Jwts.parser().setSigningKey(JwtProperties.SECRETKEY.getBytes())
+                .parseClaimsJws(token).getBody().getSubject();
+        return userRepository.findByEmail(email)
+                .orElse(null);
+    }
 }
