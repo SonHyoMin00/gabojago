@@ -2,6 +2,7 @@ package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.service.GreatService;
+import com.hanium.gabojago.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

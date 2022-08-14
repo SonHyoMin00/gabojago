@@ -1,8 +1,12 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.Bookmark;
-import com.hanium.gabojago.domain.Post;
 import com.hanium.gabojago.domain.Spot;
+import com.hanium.gabojago.domain.User;
+import com.hanium.gabojago.dto.*;
+import com.hanium.gabojago.dto.spot.SpotPageResponse;
+import com.hanium.gabojago.dto.spot.SpotResponse;
+import com.hanium.gabojago.repository.BookmarkRepository;
 import com.hanium.gabojago.dto.spot.SpotPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.repository.SpotRepository;
@@ -15,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Book;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
