@@ -9,14 +9,14 @@ import javax.persistence.*;
 public class SpotTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long spotTagId;
+    private Long spotTagId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spot_id")
-    Spot spot;
+    private Spot spot;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
-    Tag tag;
+    private Tag tag;
 
 }

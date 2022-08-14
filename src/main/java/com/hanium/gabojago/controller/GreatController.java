@@ -15,7 +15,6 @@ public class GreatController {
     private final UserService userService;
     private final GreatService greatService;
 
-    //의미는 Post인데..? 뭔가 부족한 코드.
     @PostMapping("{id}")
     public String insertGreat(@PathVariable Long id,
                               HttpServletRequest httpServletRequest) {

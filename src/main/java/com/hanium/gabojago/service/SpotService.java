@@ -7,8 +7,6 @@ import com.hanium.gabojago.dto.*;
 import com.hanium.gabojago.dto.spot.SpotPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.repository.BookmarkRepository;
-import com.hanium.gabojago.dto.spot.SpotPageResponse;
-import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.repository.SpotRepository;
 import com.hanium.gabojago.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

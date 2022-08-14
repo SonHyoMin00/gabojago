@@ -42,10 +42,10 @@ public class Spot {
     private BigDecimal spotY;
 
     @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
-    List<SpotTag> spotTags = new ArrayList<>();
+    private List<SpotTag> spotTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
-    List<Bookmark> bookmarks = new ArrayList<>();
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     public void addViewCnt() {
         this.viewCnt++;

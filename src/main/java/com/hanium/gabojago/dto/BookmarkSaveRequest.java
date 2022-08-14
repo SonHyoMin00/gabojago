@@ -2,8 +2,6 @@ package com.hanium.gabojago.dto;
 
 import lombok.*;
 
-import java.util.List;
-
 @ToString
 @Getter @Setter
 @NoArgsConstructor
