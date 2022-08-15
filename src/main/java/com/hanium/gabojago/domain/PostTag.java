@@ -4,7 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@ToString @Getter
+@ToString(exclude = {"post", "tag"})
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class PostTag {

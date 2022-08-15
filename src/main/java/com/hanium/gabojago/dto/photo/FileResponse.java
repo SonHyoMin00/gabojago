@@ -1,7 +1,6 @@
 package com.hanium.gabojago.dto.photo;
 
 import com.hanium.gabojago.domain.Photo;
-import com.hanium.gabojago.domain.PostTag;
 import lombok.Builder;
 import lombok.Getter;
 

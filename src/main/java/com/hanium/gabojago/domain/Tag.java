@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer tagId;
+    private Integer tagId;
 
     @Column
     String value;

@@ -54,6 +54,6 @@ public class UserService {
         String email = Jwts.parser().setSigningKey(JwtProperties.SECRETKEY.getBytes())
                 .parseClaimsJws(token).getBody().getSubject();
         return userRepository.findByEmail(email)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException("이메일 \"" + email + "\"에 해당하는 사용자가 존재하지 않습니다."));
     }
 }

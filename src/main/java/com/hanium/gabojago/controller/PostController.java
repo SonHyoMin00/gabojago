@@ -41,7 +41,10 @@ public class PostController {
     @GetMapping("{id}")
     public PostResponse getPost(@PathVariable Long id, HttpServletRequest httpServletRequest) {
         String token = httpServletRequest.getHeader("Authorization");
-        User user = userService.findUserByJwtToken(token);
+        User user = null;
+        if (token != null)
+            user = userService.findUserByJwtToken(token);
+
         return postService.getPost(id, user);
     }
 
@@ -55,24 +58,20 @@ public class PostController {
 
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
-        if (user == null)
-            throw new IllegalStateException("잘못된 접근입니다.");
 
         return postService.createPost(postCreateRequest, user);
     }
 
-    // 게시글 수정
+    // 게시글 수정(사진 수정 미포함)
     @PutMapping("{id}")
     public Long updatePost(@PathVariable Long id,
-                           @RequestPart PostCreateRequest postCreateRequest,
+                           @RequestPart(name = "request") PostCreateRequest postCreateRequest,
                            @RequestPart(required = false) List<MultipartFile> files,
                            HttpServletRequest httpServletRequest) {
         postCreateRequest.setFiles(files);
 
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
-        if (user == null)
-            throw new IllegalStateException("잘못된 접근입니다.");
 
         return postService.updatePost(id, postCreateRequest, user);
     }
@@ -82,8 +81,6 @@ public class PostController {
     public Long deletePost(@PathVariable Long id, HttpServletRequest httpServletRequest) {
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
-        if (user == null)
-            throw new IllegalStateException("잘못된 접근입니다.");
 
         return postService.deletePost(id, user);
     }
@@ -95,8 +92,6 @@ public class PostController {
                                       @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
-        if (user == null)
-            throw new IllegalStateException("잘못된 접근입니다.");
 
         return postService.getUserPosts(user, page - 1, size);
     }

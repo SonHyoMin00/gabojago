@@ -27,7 +27,7 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
 
     List<Spot> findAllBySpotXBetweenAndSpotYBetween(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd);
 
-    @Query(value = "select s from Spot s order by s.bookmarks.size desc")
+    @Query(value = "select s from Spot s order by size(s.bookmarks) desc")
     Page<Spot> findAllByBookmarkGroupBySpotId(Pageable pageable);
 
     Optional<Spot> findBySpotId(Long spotId);
