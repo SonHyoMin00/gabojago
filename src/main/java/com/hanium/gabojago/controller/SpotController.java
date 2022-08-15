@@ -49,6 +49,12 @@ public class SpotController {
     }
 
     // 상세정보 조회
+    /*
+    상세정보 조회는 select 걸과가 1건밖에 없음.
+    List<SpotMapResponse>가 아니라 SpotMapResponse를 반환하도록 설계해야 함.
+    밑에있는 상세정보 조회랑 똑같은 기능인 것 같음.
+    큰 이유가 없다면 여기에 북마크 갯수를 추가하던가 밑에꺼를 북마크 갯수를 보여주도록 수정하던가 해야할 것 같음.
+     */
     @GetMapping("id/{idx}")
     public List<SpotMapResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
@@ -75,12 +81,28 @@ public class SpotController {
     }
 
     // 상세정보 조회
+    /*
+    물어보기: 위에있는 상세정보 조회에서 xSpot, ySpot을 뺀것만 따로 만든 이유가 궁금!
+    특정 핫플레이스를 북마크한 모든 사용자들을 다 넘겨주도록 되어있는데,
+    북마크한 사용자들의 개인정보가 프론트에 주어지면 안됨.
+    특정 핫플레이스를 북마크한 사용자들의 "수"를 제공해야 함.
+    마찬가지로, 상세정보 조회는 select 걸과가 1건밖에 없음.
+    List<SpotBookmarkResponse>가 아니라 SpotBookmarkResponse를 반환하도록 설계해야 함.
+    조회수 증가 쿼리가 빠져있음.
+     */
     @GetMapping("bookmark/{idx}")
     public List<SpotBookmarkResponse> findBookmarkBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findBookmarkBySpotId(id);
     }
 
     // 북마크 순 조회
+    /*
+    특정 핫플레이스를 북마크한 사용자들의 개인정보가 모두 조회되어 전달되고 있음.
+    북마크한 사용자들의 목록이 아니라 북마크 "수"를 전달하도록 수정이 필요함.
+    즉, user 테이블 select 쿼리가 나가지 않도록 해야 함.
+    ++ 중요한건 아니지만 북마크 순으로 정렬된 "핫플레이스"를 조회하는 것인데, 함수명이 findBookmark으로 되어있음!
+    수정 안해도 무관.
+     */
     @GetMapping("bookmark")
     public SpotBookmarkPageResponse findBookmarkGroupBySpotId(
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
@@ -88,11 +110,14 @@ public class SpotController {
         return spotService.findBookmarkGroupBySpotId(page - 1, size);
     }
 
+    // 북마크 중복등록 예외처리가 안되어있음.
     @PostMapping("bookmark")
     public Long saveBookmark(@RequestBody BookmarkSaveRequest bookmarkSaveRequest){
         return spotService.saveBookmark(bookmarkSaveRequest);
     }
 
+    // bookmark id가 아니라 post id를 넘겨주고 user와 post를 가지고 bookmark를 조회해야 함
+    // 프론트에서 bookmark id를 알 수 없기 때문
     @DeleteMapping("bookmark/{id}")
     public Long deleteBookmark(@PathVariable Long id, @RequestParam String email) {
         return spotService.deleteBookmark(id, email);

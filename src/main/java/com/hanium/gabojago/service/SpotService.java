@@ -76,6 +76,7 @@ public class SpotService {
     // 상세 핫플레이스 데이터 가져오기
     @Transactional
     public List<SpotMapResponse> findHotplaceBySpotId(Long spotId){
+        //해당 아이디의 핫플레이스가 없다는 의미가 맞나용..?
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 사용자가 없습니다."));
         spot.addViewCnt();
 
@@ -126,6 +127,7 @@ public class SpotService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 없습니다."));
 
         Long spotId = bookmarkSaveRequest.getSpotId();
+        //해당 아이디의 핫플레이스가 없다는 의미가 맞나용..?
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 사용자가 없습니다."));
 
         Bookmark bookmark = Bookmark.builder()
@@ -137,6 +139,8 @@ public class SpotService {
     }
 
     public Long deleteBookmark(Long id, String email){
+        // bookmark id가 아니라 post id를 넘겨주고 user와 post를 가지고 bookmark를 조회해야 함
+        // 예외문구 어색
         Bookmark bookmark = bookmarkRepository.findByBookmarkId(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 사용자가 없습니다."));
 
