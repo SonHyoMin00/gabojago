@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .authorizeRequests()
                 .antMatchers("/hotplaces/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/posts/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/posts/**", "/comments/**").permitAll()
                 .antMatchers("/users/kakao/**").permitAll()
                 .antMatchers("/").permitAll()
                 .anyRequest().authenticated()
