@@ -114,7 +114,7 @@ public class SpotService {
     }
 
     // 북마크 순 데이터 가져오기
-    public  SpotBookmarkPageResponse findBookmarkGroupBySpotId(int page, int size) {
+    public  SpotBookmarkPageResponse findHotplacesByBookmark(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Spot> spots = spotRepository.findAllByBookmarkGroupBySpotId(pageable);
         return convertSpotsToSpotBookmarkPageResponse(spots);
