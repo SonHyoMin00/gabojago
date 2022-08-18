@@ -53,12 +53,15 @@ public class SpotController {
     상세정보 조회는 select 걸과가 1건밖에 없음.
     List<SpotMapResponse>가 아니라 SpotMapResponse를 반환하도록 설계해야 함.
     밑에있는 상세정보 조회랑 똑같은 기능인 것 같음.
-    큰 이유가 없다면 여기에 북마크 갯수를 추가하던가 밑에꺼를 북마크 갯수를 보여주도록 수정하던가 해야할 것 같음.
+    큰 이유가 없다면 여기에 북마크 갯수를 추가하던가
      */
     @GetMapping("id/{idx}")
     public List<SpotMapResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
     }
+//    public List<SpotMapBookmarkResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
+//        return spotService.findHotplaceBySpotId(id);
+//    }
 
     // 사용자 위치기반 조회
     @GetMapping("location")
@@ -72,9 +75,7 @@ public class SpotController {
 
     // 북마크 순 조회
     /*
-    특정 핫플레이스를 북마크한 사용자들의 개인정보가 모두 조회되어 전달되고 있음.
     북마크한 사용자들의 목록이 아니라 북마크 "수"를 전달하도록 수정이 필요함.
-    즉, user 테이블 select 쿼리가 나가지 않도록 해야 함.
      */
     @GetMapping("bookmark")
     public SpotBookmarkPageResponse getHotplacesByBookmark(
@@ -83,7 +84,6 @@ public class SpotController {
         return spotService.findHotplacesByBookmark(page - 1, size);
     }
 
-    // 북마크 중복등록 예외처리가 안되어있음.
     @PostMapping("bookmark")
     public Long saveBookmark(@RequestBody BookmarkSaveRequest bookmarkSaveRequest){
         return spotService.saveBookmark(bookmarkSaveRequest);

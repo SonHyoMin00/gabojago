@@ -18,7 +18,6 @@ public class SpotBookmarkResponse {
     private String tel;
     private String spotImage;
     private Integer viewCnt;
-    private List<BookmarkResponse> bookmarks;
 
     public SpotBookmarkResponse(Spot entity) {
         this.spotId = entity.getSpotId();
@@ -29,7 +28,5 @@ public class SpotBookmarkResponse {
         this.tel = entity.getTel();
         this.spotImage = entity.getSpotImage();
         this.viewCnt = entity.getViewCnt();
-        this.bookmarks = entity.getBookmarks().stream()
-                .map(BookmarkResponse::new).collect(Collectors.toList());
     }
 }
