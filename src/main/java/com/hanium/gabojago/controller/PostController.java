@@ -84,15 +84,4 @@ public class PostController {
 
         return postService.deletePost(id, user);
     }
-
-    //특정 유저의 게시글 조회(마이페이지)
-    @GetMapping("user")
-    public PostPageResponse userPosts(HttpServletRequest httpServletRequest,
-                                      @RequestParam(required = false, defaultValue = "1", value = "page")int page,
-                                      @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
-        String token = httpServletRequest.getHeader("Authorization");
-        User user = userService.findUserByJwtToken(token);
-
-        return postService.getUserPosts(user, page - 1, size);
-    }
 }

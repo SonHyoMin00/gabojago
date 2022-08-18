@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoOAuth2 {
     @Value("${oauth2.kakao.client-id}")
     String clientId;
+    @Value("${oauth2.kakao.redirect-uri}")
+    String redirectUri;
 
     private String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
@@ -26,7 +28,7 @@ public class KakaoOAuth2 {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
-        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        params.add("redirect_uri", redirectUri);
         params.add("code", authorizedCode);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기
