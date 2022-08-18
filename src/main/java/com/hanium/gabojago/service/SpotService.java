@@ -131,6 +131,7 @@ public class SpotService {
         return convertSpotsToSpotBookmarkPageResponse(spots);
     }
 
+    // 북마크 추가하기
     @Transactional
     public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest){
         String email = bookmarkSaveRequest.getEmail();
@@ -154,6 +155,7 @@ public class SpotService {
         return bookmarkRepository.save(bookmark).getBookmarkId();
     }
 
+    // 북마크 삭제하기
     public Long deleteBookmark(Long spotId, String email){
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
         User user = userRepository.findByEmail(email)

@@ -84,11 +84,13 @@ public class SpotController {
         return spotService.findHotplacesByBookmark(page - 1, size);
     }
 
+    //북마크 추가하기
     @PostMapping("bookmark")
     public Long saveBookmark(@RequestBody BookmarkSaveRequest bookmarkSaveRequest){
         return spotService.saveBookmark(bookmarkSaveRequest);
     }
 
+    //북마크 삭제하기
     @DeleteMapping("bookmark/{spotId}")
     public Long deleteBookmark(@PathVariable Long spotId, @RequestParam String email) {
         return spotService.deleteBookmark(spotId, email);
