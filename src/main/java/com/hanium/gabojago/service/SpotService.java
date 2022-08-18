@@ -141,9 +141,8 @@ public class SpotService {
         Long spotId = bookmarkSaveRequest.getSpotId();
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
 
-        List<Bookmark> bookmarkUser = bookmarkRepository.findByUser_UserId(userId);
-        List<Bookmark> bookmarkSpot = bookmarkRepository.findBySpot_SpotId(spotId);
-        if (!bookmarkUser.isEmpty() && !bookmarkSpot.isEmpty()) {
+        List<Bookmark> bookmarkSpotUser = bookmarkRepository.findBySpot_SpotIdAndUser_UserId(spotId,userId);
+        if (!bookmarkSpotUser.isEmpty()) {
             throw new IllegalArgumentException("중복된 북마크입니다");
         }
 

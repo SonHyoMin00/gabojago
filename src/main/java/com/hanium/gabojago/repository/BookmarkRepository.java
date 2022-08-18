@@ -9,12 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
-     Optional<Bookmark> findByBookmarkId(Long bookmarkId);
-
      Long countBySpot(Spot spot);
 
-     List<Bookmark> findByUser_UserId(Long userId);
-     List<Bookmark> findBySpot_SpotId(Long spotId);
+     List<Bookmark> findBySpot_SpotIdAndUser_UserId(Long spotId, Long userId);
 
      Optional<Bookmark> findBySpotAndUser(Spot spot, User user);
 }
