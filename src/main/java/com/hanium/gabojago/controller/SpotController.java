@@ -89,11 +89,9 @@ public class SpotController {
         return spotService.saveBookmark(bookmarkSaveRequest);
     }
 
-    // bookmark id가 아니라 post id를 넘겨주고 user와 post를 가지고 bookmark를 조회해야 함
-    // 프론트에서 bookmark id를 알 수 없기 때문
-    @DeleteMapping("bookmark/{id}")
-    public Long deleteBookmark(@PathVariable Long id, @RequestParam String email) {
-        return spotService.deleteBookmark(id, email);
+    @DeleteMapping("bookmark/{spotId}")
+    public Long deleteBookmark(@PathVariable Long spotId, @RequestParam String email) {
+        return spotService.deleteBookmark(spotId, email);
     }
 
 }
