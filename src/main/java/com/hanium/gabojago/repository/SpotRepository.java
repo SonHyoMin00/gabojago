@@ -1,5 +1,6 @@
 package com.hanium.gabojago.repository;
 
+import com.hanium.gabojago.domain.Bookmark;
 import com.hanium.gabojago.domain.Spot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +32,7 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
     Page<Spot> findAllByBookmarkGroupBySpotId(Pageable pageable);
 
     Optional<Spot> findBySpotId(Long spotId);
+
+    Page<Spot> findAllByBookmarksIn(List<Bookmark> bookmark, Pageable pageable);
+
 }
