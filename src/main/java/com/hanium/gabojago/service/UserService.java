@@ -9,6 +9,9 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,56 +20,34 @@ public class UserService {
     private final KakaoOAuth2 kakaoOAuth2;
     private final UserRepository userRepository;
 
-//    public void kakaoJoin(String authorizedCode) {
-//        // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
-//        KakaoUserDto user = kakaoOAuth2.getUserInfo(authorizedCode);
-//        String email = user.getEmail();
-//        String name = user.getName();
-//        Byte age = user.getAge();
-//        String profilePhoto = user.getProfilePhoto();
-//
-//        // DB에 있는 회원인지 확인
-//        if (!userRepository.findByEmail(email).isPresent()) {
-//            // 없으면 회원가입
-//            User newUser = User.builder()
-//                    .email(email)
-//                    .name(name)
-//                    .age(age)
-//                    .profilePhoto(profilePhoto)
-//                    .build();
-//
-//            userRepository.save(newUser);
-//        }
-//        else
-//            throw new IllegalStateException("이미 회원가입한 유저입니다.");
-//    }
-
     // authorizedCode로 가입된 사용자 조회
+    @Transactional
     public User findUserByAuthorizedCode(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
-        KakaoUserDto user = kakaoOAuth2.getUserInfo(authorizedCode);
-        String email = user.getEmail();
+        KakaoUserDto kakaoUserDto = kakaoOAuth2.getUserInfo(authorizedCode);
+        String email = kakaoUserDto.getEmail();
 
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if(optionalUser.isPresent()) return optionalUser.get();
         // 가입된 유저가 아니라면 회원가입 진행
-        if (!userRepository.findByEmail(email).isPresent()) {
-            String name = user.getName();
-            Byte age = user.getAge();
-            String profilePhoto = user.getProfilePhoto();
+        else {
+            String name = kakaoUserDto.getName();
+            Byte age = kakaoUserDto.getAge();
+            String profilePhoto = kakaoUserDto.getProfilePhoto();
 
-            User newUser = User.builder()
+            User user = User.builder()
                     .email(email)
                     .name(name)
                     .age(age)
                     .profilePhoto(profilePhoto)
                     .build();
 
-            userRepository.save(newUser);
+            return userRepository.save(user);
         }
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일 \"" + email + "\"에 해당하는 사용자가 존재하지 않습니다."));
     }
 
+    @Transactional(readOnly = true)
     public User findUserByJwtToken(String token) {
         log.info("-----JWT:" + token);
         log.info("-----secretKey:" + JwtProperties.SECRETKEY);
@@ -74,5 +55,10 @@ public class UserService {
                 .parseClaimsJws(token).getBody().getSubject();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일 \"" + email + "\"에 해당하는 사용자가 존재하지 않습니다."));
+    }
+
+    public Long deleteUser(User user) {
+        userRepository.delete(user);
+        return user.getUserId();
     }
 }

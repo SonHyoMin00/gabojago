@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 
 @RequiredArgsConstructor
@@ -17,36 +18,26 @@ public class HomeController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
-//    @GetMapping("/users/kakao/callback")
-//    public String kakaoLoginCallback(@RequestParam String code) {
-//        User user = userService.findUserByAuthorizedCode(code);
-//        return "redirect:/";
-//    }
-
+    // 카카오 로그인 콜백함수 -> 회원가입 및 로그인 일괄처리
     @GetMapping("/users/kakao/callback")
     public ResponseEntity<Object> kakaoLoginCallback(@RequestParam String code) {
         User user = userService.findUserByAuthorizedCode(code);
+
         HttpHeaders headers = new HttpHeaders();
-        String token = jwtTokenProvider.createToken(user.getEmail());
-        headers.setBearerAuth(token);
-        headers.set("token", token);
-        headers.setLocation(URI.create("http://localhost:5501/html/index.html"));
+        String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
+
+        headers.set("Access-Token", token);
+        headers.setLocation(URI.create("http://localhost:8080/5501/html/index.html"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
-    // 회원가입
-//    @PostMapping("/users/kakao/join")
-//    public String kakaoJoin(@RequestBody Map<String, String> code) {
-//        userService.kakaoJoin(code.get("code"));
-//        return "회원가입 성공";
-//    }
-
-    // 로그인
-//    @PostMapping("/users/kakao/login")
-//    public String login(@RequestBody Map<String, String> code) {
-//        User user = userService.findUserByAuthorizedCode(code.get("code"));
-//        return jwtTokenProvider.createToken(user.getEmail());
-//    }
+    // 회원 탈퇴
+    @DeleteMapping("/users/withdrawal")
+    public Long withdrawal(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(token);
+        return userService.deleteUser(user);
+    }
 
     @GetMapping("/test")
     public String test() {
