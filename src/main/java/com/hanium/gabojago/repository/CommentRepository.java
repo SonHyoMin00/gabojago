@@ -2,6 +2,7 @@ package com.hanium.gabojago.repository;
 
 import com.hanium.gabojago.domain.Comment;
 import com.hanium.gabojago.domain.Post;
+import com.hanium.gabojago.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             value = "select c from Comment c join fetch c.user where c.post=:post",
         countQuery = "select count(c) from Comment c where c.post=:post")
     Page<Comment> findAllByPostWithUser(Post post, Pageable pageable);
+
+    Long countByUser(User user);
 }

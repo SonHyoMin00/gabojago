@@ -2,7 +2,11 @@ package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
+import com.hanium.gabojago.dto.user.UserResponse;
 import com.hanium.gabojago.handler.FileHandler;
+import com.hanium.gabojago.repository.BookmarkRepository;
+import com.hanium.gabojago.repository.CommentRepository;
+import com.hanium.gabojago.repository.PostRepository;
 import com.hanium.gabojago.util.properties.ApplicationProperties;
 import com.hanium.gabojago.util.properties.JwtProperties;
 import com.hanium.gabojago.oauth.kakao.KakaoOAuth2;
@@ -23,8 +27,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final KakaoOAuth2 kakaoOAuth2;
-    private final UserRepository userRepository;
     private final FileHandler fileHandler;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     // authorizedCode로 가입된 사용자 조회
     @Transactional
@@ -72,6 +79,20 @@ public class UserService {
     public String updateName(User user, NameUpdateRequest nameUpdateRequest) {
         user.updateName(nameUpdateRequest.getName());
         return nameUpdateRequest.getName();
+    }
+
+    @Transactional
+    public UserResponse getDefaultUserInfo(User user) {
+        Long postCnt = postRepository.countByUser(user);
+        Long commentCnt = commentRepository.countByUser(user);
+        Long bookmarkCnt = bookmarkRepository.countByUser(user);
+
+        return UserResponse.builder()
+                .user(user)
+                .postCnt(postCnt)
+                .commentCnt(commentCnt)
+                .bookmarkCnt(bookmarkCnt)
+                .build();
     }
 
     @Transactional
