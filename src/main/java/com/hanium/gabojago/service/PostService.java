@@ -1,14 +1,12 @@
 package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.*;
-import com.hanium.gabojago.dto.post.PostCreateRequest;
-import com.hanium.gabojago.dto.post.PostDetailResponse;
-import com.hanium.gabojago.dto.post.PostPageResponse;
-import com.hanium.gabojago.dto.post.PostResponse;
+import com.hanium.gabojago.dto.post.*;
 import com.hanium.gabojago.handler.FileHandler;
 import com.hanium.gabojago.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,7 +31,11 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
     private final GreatRepository greatRepository;
+    private final PhotoRepository photoRepository;
     private final FileHandler fileHandler;
+
+    @Value("${images.path.post}")
+    private String postPath;
 
     // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
     // 계속 중복됨: 나중에 인터페이스로 나타내기
@@ -132,7 +135,7 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public Long updatePost(Long id, PostCreateRequest postCreateRequest, User user) {
+    public Long updatePost(Long id, PostUpdateRequest postUpdateRequest, User user) {
         // 1. 게시글 존재 여부 확인
          Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
@@ -150,7 +153,7 @@ public class PostService {
         }
 
         // 4. 새로 등록할 태그 조회
-        List<Integer> tags = postCreateRequest.getTags();
+        List<Integer> tags = postUpdateRequest.getTags();
         List<Tag> tagList = tagRepository.findAllById(tags);
         log.info("tagList: " + tagList);
 
@@ -165,12 +168,35 @@ public class PostService {
         }
         log.info("수정된 태그: " + newPostTags);
 
-        // 6. post 수정
-        post.updatePost(postCreateRequest, newPostTags);
+        // 6. 삭제를 요청받은 사진 삭제
+        if(!postUpdateRequest.getDeleteFiles().isEmpty()) {
+            List<Photo> photos = photoRepository.findAllById(postUpdateRequest.getDeleteFiles());
+
+            for(Photo photo : photos) {
+                String filePath = postPath + photo.getFileName();
+                try {
+                    File file = new File(filePath);
+                    file.delete();
+                } catch (Exception e) {
+                    throw new IllegalStateException("포스트 사진 삭제 실패: " + e);
+                }
+            }
+
+            photoRepository.deleteAllInBatch(photos);
+            log.info("사진 삭제: " + postUpdateRequest.getDeleteFiles().toString());
+        }
+
+        // 7. 추가 요청받은 사진 저장
+        List<Photo> newPhotos = fileHandler.parseFileInfo(postUpdateRequest.getInsertFiles(), post);
+        log.info("새로 추가된 사진: " + newPhotos.toString());
+
+        // 8. post 수정
+        post.updatePost(postUpdateRequest, newPostTags, newPhotos);
         return post.getPostId();
     }
 
     // 게시글 삭제
+    @Transactional
     public Long deletePost(Long id, User user) {
         // 1. 게시글 조회
         Post post = postRepository.findByIdWithUser(id)
@@ -180,6 +206,21 @@ public class PostService {
         if (!user.equals(post.getUser())) {
             throw new IllegalArgumentException("잘못된 접근입니다.");
         }
+
+        // 3. 첨부파일 서버에서 삭제
+        List<Photo> photos = photoRepository.findAllByPost(post);
+        for(Photo photo : photos) {
+            String filePath = postPath + photo.getFileName();
+            try {
+                File file = new File(filePath);
+                file.delete();
+            } catch (Exception e) {
+                throw new IllegalStateException("포스트 사진 삭제 실패: " + e);
+            }
+        }
+
+        photoRepository.deleteAllInBatch(photos);
+        log.info("사진 삭제 완료.");
 
         // 3. 게시글 삭제
         // on delete cascade 제약조건이라 post만 지워도 post_tag는 알아서 삭제되는데 post_tag 삭제 쿼리가 n개만큼 먼저 나가는 문제

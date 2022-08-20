@@ -3,13 +3,14 @@ package com.hanium.gabojago.service;
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
 import com.hanium.gabojago.handler.FileHandler;
-import com.hanium.gabojago.jwt.JwtProperties;
+import com.hanium.gabojago.util.properties.JwtProperties;
 import com.hanium.gabojago.oauth.kakao.KakaoOAuth2;
 import com.hanium.gabojago.oauth.kakao.KakaoUserDto;
 import com.hanium.gabojago.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,9 @@ public class UserService {
     private final KakaoOAuth2 kakaoOAuth2;
     private final UserRepository userRepository;
     private final FileHandler fileHandler;
+
+    @Value("${host-image-url}")
+    private String hostImgUrl;
 
     // authorizedCode로 가입된 사용자 조회
     @Transactional
@@ -74,8 +78,8 @@ public class UserService {
 
     @Transactional
     public String updateProfilePhoto(User user, MultipartFile multipartFile) {
-        String profilePhoto = fileHandler.parseFileInfo(multipartFile);
+        String profilePhoto = fileHandler.parseFileInfo(multipartFile, user);
         user.updateProfilePhoto(profilePhoto);
-        return profilePhoto;
+        return hostImgUrl + "profile/" + profilePhoto;
     }
 }

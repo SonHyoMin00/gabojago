@@ -1,6 +1,6 @@
 package com.hanium.gabojago.domain;
 
-import com.hanium.gabojago.dto.post.PostCreateRequest;
+import com.hanium.gabojago.dto.post.PostUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,10 +47,13 @@ public class Post extends BaseTimeEntity{
         this.context = context;
     }
 
-    public void updatePost(PostCreateRequest postCreateRequest, List<PostTag> newPostTags) {
-        this.title = postCreateRequest.getTitle();
-        this.context = postCreateRequest.getContext();
+    public void updatePost(PostUpdateRequest postUpdateRequest,
+                           List<PostTag> newPostTags,
+                           List<Photo> newPhotos) {
+        this.title = postUpdateRequest.getTitle();
+        this.context = postUpdateRequest.getContext();
         this.postTags.addAll(newPostTags);
+        this.photos.addAll(newPhotos);
     }
 
     public void increaseViewCnt() {

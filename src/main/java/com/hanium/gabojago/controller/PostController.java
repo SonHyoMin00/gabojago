@@ -4,6 +4,7 @@ import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.post.PostCreateRequest;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.post.PostResponse;
+import com.hanium.gabojago.dto.post.PostUpdateRequest;
 import com.hanium.gabojago.service.PostService;
 import com.hanium.gabojago.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class PostController {
     public PostPageResponse getPosts(
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
             @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
+
         return postService.getPosts(page - 1, size);
     }
 
@@ -40,6 +42,7 @@ public class PostController {
     // 특정 게시글 조회(회원이면 - 좋아요 표시 여부를 함께 리턴, 비회원이면 - 좋아요 표시를 false로 리턴)
     @GetMapping("{id}")
     public PostResponse getPost(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+
         String token = httpServletRequest.getHeader("Authorization");
         User user = null;
         if (token != null)
@@ -53,6 +56,7 @@ public class PostController {
     public Long createPost(@RequestPart(name = "request") PostCreateRequest postCreateRequest,
                            @RequestPart(name = "files", required = false) List<MultipartFile> files,
                            HttpServletRequest httpServletRequest) {
+
         postCreateRequest.setFiles(files);
         log.info(String.valueOf(postCreateRequest));
 
@@ -62,23 +66,26 @@ public class PostController {
         return postService.createPost(postCreateRequest, user);
     }
 
-    // 게시글 수정(사진 수정 미포함)
+    // 게시글 수정
     @PutMapping("{id}")
     public Long updatePost(@PathVariable Long id,
-                           @RequestPart(name = "request") PostCreateRequest postCreateRequest,
+                           @RequestPart(name = "request") PostUpdateRequest postUpdateRequest,
                            @RequestPart(required = false) List<MultipartFile> files,
                            HttpServletRequest httpServletRequest) {
-        postCreateRequest.setFiles(files);
+
+        postUpdateRequest.setInsertFiles(files);
+        log.info(String.valueOf(postUpdateRequest));
 
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
 
-        return postService.updatePost(id, postCreateRequest, user);
+        return postService.updatePost(id, postUpdateRequest, user);
     }
 
     // 게시글 삭제
     @DeleteMapping("{id}")
     public Long deletePost(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
 
