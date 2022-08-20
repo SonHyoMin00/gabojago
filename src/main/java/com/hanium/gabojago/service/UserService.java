@@ -3,6 +3,7 @@ package com.hanium.gabojago.service;
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
 import com.hanium.gabojago.handler.FileHandler;
+import com.hanium.gabojago.util.properties.ApplicationProperties;
 import com.hanium.gabojago.util.properties.JwtProperties;
 import com.hanium.gabojago.oauth.kakao.KakaoOAuth2;
 import com.hanium.gabojago.oauth.kakao.KakaoUserDto;
@@ -10,11 +11,11 @@ import com.hanium.gabojago.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Optional;
 
 @Slf4j
@@ -24,9 +25,6 @@ public class UserService {
     private final KakaoOAuth2 kakaoOAuth2;
     private final UserRepository userRepository;
     private final FileHandler fileHandler;
-
-    @Value("${host-image-url}")
-    private String hostImgUrl;
 
     // authorizedCode로 가입된 사용자 조회
     @Transactional
@@ -80,6 +78,17 @@ public class UserService {
     public String updateProfilePhoto(User user, MultipartFile multipartFile) {
         String profilePhoto = fileHandler.parseFileInfo(multipartFile, user);
         user.updateProfilePhoto(profilePhoto);
-        return hostImgUrl + "profile/" + profilePhoto;
+        return ApplicationProperties.HOST_IMAGE_URL + "profile/" + profilePhoto;
+    }
+
+    @Transactional
+    public String deleteProfilePhoto(User user) {
+        String profilePath = ApplicationProperties.PROFILE_PATH + user.getProfilePhoto();
+
+        File file = new File(profilePath);
+        if(!file.delete()) throw new IllegalStateException("프로필 사진 삭제에 실패했습니다");
+
+        user.deleteProfile();
+        return "프로필 사진 삭제 성공";
     }
 }

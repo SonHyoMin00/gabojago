@@ -48,4 +48,13 @@ public class UserController {
         User user = userService.findUserByJwtToken(token);
         return userService.updateProfilePhoto(user, multipartFile);
     }
+
+    // 프로필 사진 삭제
+    @DeleteMapping("/profile")
+    public String updateProfilePhoto(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(token);
+
+        return userService.deleteProfilePhoto(user);
+    }
 }
