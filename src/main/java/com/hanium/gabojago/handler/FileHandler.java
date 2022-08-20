@@ -21,10 +21,10 @@ import java.util.List;
 @Component
 public class FileHandler {
     @Value("${images.path.post}")
-    private String postImagePath;
+    private String postPath;
 
     @Value("${images.path.profile}")
-    private String profileImagePath;
+    private String profilePath;
 
     public List<Photo> parseFileInfo(List<MultipartFile> multipartFiles, Post post) {
         // 반환할 파일 리스트
@@ -39,7 +39,7 @@ public class FileHandler {
             String current_date = now.format(dateTimeFormatter);
 
             // 파일을 저장할 세부 경로 지정
-            String path = postImagePath + File.separator + current_date;
+            String path = postPath + File.separator + current_date;
             File file = new File(path);
 
             // 디렉터리가 존재하지 않을 경우
@@ -52,24 +52,13 @@ public class FileHandler {
             // 다중 파일 처리
             for(MultipartFile multipartFile : multipartFiles) {
 
-                // 파일의 확장자 추출
-                String originalFileExtension;
-                String contentType = multipartFile.getContentType();
+                // 이미지 파일인지 검증
+                validateContentType(multipartFile);
 
-                // 확장자명이 존재하지 않을 경우 에러
-                if(ObjectUtils.isEmpty(contentType)) {
-                    throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
-                }
-                // 확장자가 jpeg, png인 파일들만 받아서 처리
-                else if(!contentType.contains("image/jpeg") && !contentType.contains("image/png")) {
-
-                    throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
-                }
-
-                // 파일명 중복을 피해 파일명 설정
+                // 유니크한 파일명 설정
                 String new_file_name = System.nanoTime() + multipartFile.getOriginalFilename();
 
-                // 파일 DTO 이용하여 Photo 엔티티 생성
+                // Photo 엔티티 생성
                 Photo photo = Photo.builder()
                         .post(post)
                         .fileName(current_date + "/" + new_file_name)
@@ -98,32 +87,21 @@ public class FileHandler {
         if (multipartFile == null)
             throw new IllegalArgumentException("파일이 첨부되지 않았습니다.");
 
-        // 파일의 확장자 추출
-        String contentType = multipartFile.getContentType();
-
         // 확장자명이 존재하지 않을 경우 에러
-        if(ObjectUtils.isEmpty(contentType)) {
-            throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
-        }
-        // 확장자가 jpeg, png인 파일들만 받아서 처리
-        else if(!contentType.contains("image/jpeg") && !contentType.contains("image/png")) {
-
-                throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
-        }
+        validateContentType(multipartFile);
 
         // 프로필 사진이 설정되어 있다면 삭제
        if(user.getProfilePhoto() != null) {
-            File originalFilePath = new File(profileImagePath + user.getProfilePhoto());
-           try {
-               if (originalFilePath.exists()) originalFilePath.delete();
-           } catch (Exception e) {
-               log.error("기존에 설정된 프로필 사진 삭제에 실패했습니다.");
+            File originalFilePath = new File(profilePath + user.getProfilePhoto());
+
+           if (originalFilePath.exists()) {
+               if(!originalFilePath.delete()) log.error("기존에 설정된 프로필 사진 삭제에 실패했습니다.");
            }
         }
 
         // 파일명 저장 경로 및 파일명 설정
         String fileName = user.getUserId() + "_" + multipartFile.getOriginalFilename();
-        String filePath = profileImagePath + fileName;
+        String filePath = profilePath + fileName;
 
         // 업로드 한 파일 데이터를 지정한 파일에 저장
         File file = new File(filePath);
@@ -135,5 +113,19 @@ public class FileHandler {
         }
 
         return fileName;
+    }
+
+    private void validateContentType(MultipartFile multipartFile) {
+        // 파일의 확장자 추출
+        String contentType = multipartFile.getContentType();
+
+        if(ObjectUtils.isEmpty(contentType)) {
+            throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
+        }
+        // 확장자가 jpeg, png인 파일들만 받아서 처리
+        else if(!contentType.contains("image/jpeg") && !contentType.contains("image/png")) {
+
+            throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
+        }
     }
 }
