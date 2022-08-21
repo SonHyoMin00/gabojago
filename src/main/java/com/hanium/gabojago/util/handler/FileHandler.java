@@ -128,4 +128,17 @@ public class FileHandler {
             throw new IllegalArgumentException("사진 파일만 업로드해주세요.");
         }
     }
+
+    public void deletePhotosInServer(List<Photo> photos) {
+        for(Photo photo : photos) {
+            String filePath = postPath + photo.getFileName();
+            try {
+                File file = new File(filePath);
+                if(!file.delete())
+                    throw new IllegalStateException("포스트 사진 삭제에 실패했습니다.");
+            } catch (Exception e) {
+                throw new IllegalStateException("포스트 사진 삭제에 실패했습니다: " + e);
+            }
+        }
+    }
 }

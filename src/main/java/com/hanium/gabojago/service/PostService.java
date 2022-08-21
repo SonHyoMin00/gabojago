@@ -171,17 +171,7 @@ public class PostService {
         // 6. 삭제를 요청받은 사진 삭제
         if(!postUpdateRequest.getDeleteFiles().isEmpty()) {
             List<Photo> photos = photoRepository.findAllById(postUpdateRequest.getDeleteFiles());
-
-            for(Photo photo : photos) {
-                String filePath = postPath + photo.getFileName();
-                try {
-                    File file = new File(filePath);
-                    file.delete();
-                } catch (Exception e) {
-                    throw new IllegalStateException("포스트 사진 삭제 실패: " + e);
-                }
-            }
-
+            fileHandler.deletePhotosInServer(photos);
             photoRepository.deleteAllInBatch(photos);
             log.info("사진 삭제: " + postUpdateRequest.getDeleteFiles().toString());
         }
@@ -209,20 +199,13 @@ public class PostService {
 
         // 3. 첨부파일 서버에서 삭제
         List<Photo> photos = photoRepository.findAllByPost(post);
-        for(Photo photo : photos) {
-            String filePath = postPath + photo.getFileName();
-            try {
-                File file = new File(filePath);
-                file.delete();
-            } catch (Exception e) {
-                throw new IllegalStateException("포스트 사진 삭제 실패: " + e);
-            }
-        }
+        fileHandler.deletePhotosInServer(photos);
 
+        // 4. 첨부파일 DB에서 삭제
         photoRepository.deleteAllInBatch(photos);
         log.info("사진 삭제 완료.");
 
-        // 3. 게시글 삭제
+        // 5. 게시글 삭제
         // on delete cascade 제약조건이라 post만 지워도 post_tag는 알아서 삭제되는데 post_tag 삭제 쿼리가 n개만큼 먼저 나가는 문제
         postRepository.delete(post);
         return id;
