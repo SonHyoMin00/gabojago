@@ -73,7 +73,7 @@ public class SpotService {
         return convertSpotsToSpotPageResponse(spots);
     }
 
-    //Spot spots을 SpotBookmarkPageResponse(dto)로 바꾸는 함수
+    //Spot spots을 SpotMapBookmarkPageResponse(dto)로 바꾸는 함수
     private SpotMapBookmarkCntResponse convertSpotsToSpotMapBookmarkCntResponse(Spot spots) {
         //북마크 수
         Long bookmarkCnt = bookmarkRepository.countBySpot(spots);
