@@ -1,4 +1,4 @@
-package com.hanium.gabojago.dto.post;
+package com.hanium.gabojago.dto.postTag;
 
 import com.hanium.gabojago.domain.PostTag;
 import lombok.Builder;

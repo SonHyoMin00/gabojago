@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .antMatchers("/hotplaces/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/posts/**", "/comments/**", "/users/**").permitAll()
                 .antMatchers("/users/kakao/**").permitAll()
-                .antMatchers("/").permitAll()
+                .antMatchers("/", "/images/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

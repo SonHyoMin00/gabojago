@@ -1,4 +1,4 @@
-package com.hanium.gabojago.jwt;
+package com.hanium.gabojago.util.properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
