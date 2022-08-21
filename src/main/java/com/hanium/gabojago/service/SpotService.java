@@ -3,7 +3,10 @@ package com.hanium.gabojago.service;
 import com.hanium.gabojago.domain.Bookmark;
 import com.hanium.gabojago.domain.Spot;
 import com.hanium.gabojago.domain.User;
-import com.hanium.gabojago.dto.*;
+import com.hanium.gabojago.dto.bookmark.BookmarkSaveRequest;
+import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
+import com.hanium.gabojago.dto.bookmark.SpotBookmarkResponse;
+import com.hanium.gabojago.dto.spot.SpotMapResponse;
 import com.hanium.gabojago.dto.spot.SpotPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.repository.BookmarkRepository;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,38 +77,33 @@ public class SpotService {
         return convertSpotsToSpotPageResponse(spots);
     }
 
-    //Spot spots을 SpotMapBookmarkPageResponse(dto)로 바꾸는 함수
-    private SpotMapBookmarkCntResponse convertSpotsToSpotMapBookmarkCntResponse(Spot spots) {
-        //북마크 수
-        Long bookmarkCnt = bookmarkRepository.countBySpot(spots);
-        log.info("북마크 수: " + bookmarkRepository.countBySpot(spots));
-
-        //SpotMapResponse DTO로 변환
-        SpotMapResponse spotMapResponses = new SpotMapResponse(spots);
-
-        // 북마크 수 추가하여 반환
-        return SpotMapBookmarkCntResponse.builder()
-                .spotMapResponses(spotMapResponses)
-                .bookmarkCnt(bookmarkCnt)
-                .build();
-    }
-
-
     // 상세 핫플레이스 데이터 가져오기
     @Transactional
-    public SpotMapBookmarkCntResponse findHotplaceBySpotId(Long spotId){
+    public SpotMapResponse findHotplaceBySpotId(Long spotId){
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
         spot.addViewCnt();
 
         Spot spots = spotRepository.findAllBySpotId(spotId);
 
-        return convertSpotsToSpotMapBookmarkCntResponse(spots);
+        //북마크 수
+        Long bookmarkCnt = bookmarkRepository.countBySpot(spots);
+        log.info("북마크 수: " + bookmarkRepository.countBySpot(spots));
+
+        return new SpotMapResponse(spots, bookmarkCnt);
     }
 
     // 사용자 위치기반 데이터 가져오기
     public List<SpotMapResponse> findLocationBySpotXAndSpotY(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd){
         List<Spot> spots = spotRepository.findAllBySpotXBetweenAndSpotYBetween(xStart, xEnd, yStart, yEnd);
-        return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
+        List<SpotMapResponse> res = new ArrayList();
+        for(Spot spot : spots){
+            //북마크 수
+            Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
+            log.info("북마크 수: " + bookmarkRepository.countBySpot(spot));
+
+           res.add(new SpotMapResponse(spot, bookmarkCnt));
+        }
+        return res;
     }
 
     //Page<Spot>을 SpotBookmarkPageResponse(dto)로 바꾸는 함수
@@ -113,13 +112,19 @@ public class SpotService {
         int totalPages = spots.getTotalPages();
         log.info("총 페이지 수: " + spots.getTotalPages());
 
-        //spotBookmarkResponses DTO로 변환
-        List<SpotBookmarkResponse> spotBookmarkResponses = spots.getContent()
-                .stream().map(SpotBookmarkResponse::new).collect(Collectors.toList());
+        //spotBookmarkResponses로 변환
+        List<SpotBookmarkResponse> res = new ArrayList();
+        for(Spot spot : spots){
+            //북마크 수
+            Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
+            log.info("북마크 수: " + bookmarkRepository.countBySpot(spot));
+
+            res.add(new SpotBookmarkResponse(spot, bookmarkCnt));
+        }
 
         // 총 페이지 수 추가하여 반환
         return SpotBookmarkPageResponse.builder()
-                .spotBookmarkResponses(spotBookmarkResponses)
+                .spotBookmarkResponses(res)
                 .totalPages(totalPages)
                 .build();
     }
@@ -133,10 +138,7 @@ public class SpotService {
 
     // 북마크 추가하기
     @Transactional
-    public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest){
-        String email = bookmarkSaveRequest.getEmail();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 없습니다."));
+    public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest, User user){
         Long userId = user.getUserId();
 
         Long spotId = bookmarkSaveRequest.getSpotId();
@@ -156,10 +158,8 @@ public class SpotService {
     }
 
     // 북마크 삭제하기
-    public Long deleteBookmark(Long spotId, String email){
+    public Long deleteBookmark(Long spotId, User user){
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 없습니다."));
 
         Bookmark bookmark = bookmarkRepository.findBySpotAndUser(spot, user)
                 .orElseThrow(() -> new IllegalArgumentException("해당 핫플레이스의 북마크가 없습니다."));
@@ -167,5 +167,16 @@ public class SpotService {
         bookmarkRepository.delete(bookmark);
 
         return spotId;
+    }
+
+    // 사용자 북마크 조회(마이페이지)
+    public SpotBookmarkPageResponse getUserBookmarks(User user, int page, int size) {
+        //1. 북마크 테이블에서 사용자가 북마크한 핫플 찾기
+        List<Bookmark> bookmark = bookmarkRepository.findByUser(user);
+
+        //2. 핫플들 정보 페이지마다 보내주기
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Spot> spots = spotRepository.findAllByBookmarksIn(bookmark, pageable);
+        return convertSpotsToSpotBookmarkPageResponse(spots);
     }
 }

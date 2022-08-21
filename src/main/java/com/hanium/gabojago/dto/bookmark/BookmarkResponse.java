@@ -1,4 +1,4 @@
-package com.hanium.gabojago.dto;
+package com.hanium.gabojago.dto.bookmark;
 
 import com.hanium.gabojago.domain.Bookmark;
 import lombok.Builder;

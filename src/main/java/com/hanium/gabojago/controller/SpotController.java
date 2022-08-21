@@ -1,12 +1,17 @@
 package com.hanium.gabojago.controller;
 
+import com.hanium.gabojago.domain.User;
+import com.hanium.gabojago.dto.bookmark.BookmarkSaveRequest;
+import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
+import com.hanium.gabojago.dto.spot.SpotMapResponse;
 import com.hanium.gabojago.dto.spot.SpotPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
-import com.hanium.gabojago.dto.*;
 import com.hanium.gabojago.service.SpotService;
+import com.hanium.gabojago.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -15,6 +20,7 @@ import java.util.List;
 @RestController
 public class SpotController {
     private final SpotService spotService;
+    private final UserService userService;
 
     // 실시간 순위 조회(top 10)
     @GetMapping("realtime")
@@ -50,7 +56,7 @@ public class SpotController {
 
     // 상세정보 조회
     @GetMapping("id/{idx}")
-    public SpotMapBookmarkCntResponse findHotplaceBySpotId(@PathVariable("idx") Long id ) {
+    public SpotMapResponse findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
     }
 
@@ -77,14 +83,23 @@ public class SpotController {
 
     //북마크 추가하기
     @PostMapping("bookmark")
-    public Long saveBookmark(@RequestBody BookmarkSaveRequest bookmarkSaveRequest){
-        return spotService.saveBookmark(bookmarkSaveRequest);
+    public Long saveBookmark(@RequestBody BookmarkSaveRequest bookmarkSaveRequest,
+                             HttpServletRequest httpServletRequest){
+
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(token);
+
+        return spotService.saveBookmark(bookmarkSaveRequest, user);
     }
 
     //북마크 삭제하기
     @DeleteMapping("bookmark/{spotId}")
-    public Long deleteBookmark(@PathVariable Long spotId, @RequestParam String email) {
-        return spotService.deleteBookmark(spotId, email);
+    public Long deleteBookmark(@PathVariable Long spotId, HttpServletRequest httpServletRequest) {
+
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(token);
+
+        return spotService.deleteBookmark(spotId, user);
     }
 
 }
