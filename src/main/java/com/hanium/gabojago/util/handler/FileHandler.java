@@ -1,4 +1,4 @@
-package com.hanium.gabojago.handler;
+package com.hanium.gabojago.util.handler;
 
 import com.hanium.gabojago.domain.Photo;
 

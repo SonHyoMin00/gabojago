@@ -2,7 +2,7 @@ package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.*;
 import com.hanium.gabojago.dto.post.*;
-import com.hanium.gabojago.handler.FileHandler;
+import com.hanium.gabojago.util.handler.FileHandler;
 import com.hanium.gabojago.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

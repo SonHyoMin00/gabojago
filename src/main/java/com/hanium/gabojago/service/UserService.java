@@ -3,7 +3,7 @@ package com.hanium.gabojago.service;
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
 import com.hanium.gabojago.dto.user.UserResponse;
-import com.hanium.gabojago.handler.FileHandler;
+import com.hanium.gabojago.util.handler.FileHandler;
 import com.hanium.gabojago.repository.BookmarkRepository;
 import com.hanium.gabojago.repository.CommentRepository;
 import com.hanium.gabojago.repository.PostRepository;
