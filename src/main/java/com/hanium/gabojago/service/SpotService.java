@@ -73,38 +73,38 @@ public class SpotService {
         return convertSpotsToSpotPageResponse(spots);
     }
 
+    //Spot spots을 SpotBookmarkPageResponse(dto)로 바꾸는 함수
+    private SpotMapBookmarkCntResponse convertSpotsToSpotMapBookmarkCntResponse(Spot spots) {
+        //북마크 수
+        Long bookmarkCnt = bookmarkRepository.countBySpot(spots);
+        log.info("북마크 수: " + bookmarkRepository.countBySpot(spots));
+
+        //SpotMapResponse DTO로 변환
+        SpotMapResponse spotMapResponses = new SpotMapResponse(spots);
+
+        // 북마크 수 추가하여 반환
+        return SpotMapBookmarkCntResponse.builder()
+                .spotMapResponses(spotMapResponses)
+                .bookmarkCnt(bookmarkCnt)
+                .build();
+    }
+
+
     // 상세 핫플레이스 데이터 가져오기
     @Transactional
-    public List<SpotMapResponse> findHotplaceBySpotId(Long spotId){
+    public SpotMapBookmarkCntResponse findHotplaceBySpotId(Long spotId){
         Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
         spot.addViewCnt();
 
-        List<Spot> spots = spotRepository.findAllBySpotId(spotId);
+        Spot spots = spotRepository.findAllBySpotId(spotId);
 
-        //Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
-        //spots.add(bookmarkCnt);
-
-        return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
+        return convertSpotsToSpotMapBookmarkCntResponse(spots);
     }
-//    public List<SpotMapBookmarkResponse> findHotplaceBySpotId(Long spotId){
-//        Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
-//        spot.addViewCnt();
-//
-//        List<Spot> spots = spotRepository.findAllBySpotId(spotId);
-//
-//        return spots.stream().map(SpotMapBookmarkResponse::new).collect(Collectors.toList());
-//    }
 
     // 사용자 위치기반 데이터 가져오기
     public List<SpotMapResponse> findLocationBySpotXAndSpotY(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd){
         List<Spot> spots = spotRepository.findAllBySpotXBetweenAndSpotYBetween(xStart, xEnd, yStart, yEnd);
         return spots.stream().map(SpotMapResponse::new).collect(Collectors.toList());
-    }
-
-    // 북마크 정보 가져오기
-    public List<SpotBookmarkResponse> findBookmarkBySpotId(Long spotId){
-        List<Spot> spots = spotRepository.findAllBySpotId(spotId);
-        return spots.stream().map(SpotBookmarkResponse::new).collect(Collectors.toList());
     }
 
     //Page<Spot>을 SpotBookmarkPageResponse(dto)로 바꾸는 함수

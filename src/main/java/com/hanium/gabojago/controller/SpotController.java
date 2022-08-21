@@ -49,19 +49,10 @@ public class SpotController {
     }
 
     // 상세정보 조회
-    /*
-    상세정보 조회는 select 걸과가 1건밖에 없음.
-    List<SpotMapResponse>가 아니라 SpotMapResponse를 반환하도록 설계해야 함.
-    밑에있는 상세정보 조회랑 똑같은 기능인 것 같음.
-    큰 이유가 없다면 여기에 북마크 갯수를 추가하던가
-     */
     @GetMapping("id/{idx}")
-    public List<SpotMapResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
+    public SpotMapBookmarkCntResponse findHotplaceBySpotId(@PathVariable("idx") Long id ) {
         return spotService.findHotplaceBySpotId(id);
     }
-//    public List<SpotMapBookmarkResponse> findHotplaceBySpotId(@PathVariable("idx") Long id ) {
-//        return spotService.findHotplaceBySpotId(id);
-//    }
 
     // 사용자 위치기반 조회
     @GetMapping("location")

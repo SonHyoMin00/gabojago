@@ -24,7 +24,7 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
             countQuery = "select count(st) from SpotTag st where st.tag.tagId=:tagId")
     Page<Spot> findHotplaceByTag(@Param(value = "tagId") int tagId, Pageable pageable);
 
-    List<Spot> findAllBySpotId(Long spotId);
+    Spot findAllBySpotId(Long spotId);
 
     List<Spot> findAllBySpotXBetweenAndSpotYBetween(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd);
 
