@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class SpotService {
     private final SpotRepository spotRepository;
-    private final UserRepository userRepository;
     private final BookmarkRepository bookmarkRepository;
 
     //Page<Spot>을 SpotPageResponse(dto)로 바꾸는 함수
@@ -95,7 +94,7 @@ public class SpotService {
     // 사용자 위치기반 데이터 가져오기
     public List<SpotMapResponse> findLocationBySpotXAndSpotY(BigDecimal xStart, BigDecimal xEnd, BigDecimal yStart, BigDecimal yEnd){
         List<Spot> spots = spotRepository.findAllBySpotXBetweenAndSpotYBetween(xStart, xEnd, yStart, yEnd);
-        List<SpotMapResponse> res = new ArrayList();
+        List<SpotMapResponse> res = new ArrayList<>();
         for(Spot spot : spots){
             //북마크 수
             Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
@@ -113,7 +112,7 @@ public class SpotService {
         log.info("총 페이지 수: " + spots.getTotalPages());
 
         //spotBookmarkResponses로 변환
-        List<SpotBookmarkResponse> res = new ArrayList();
+        List<SpotBookmarkResponse> res = new ArrayList<>();
         for(Spot spot : spots){
             //북마크 수
             Long bookmarkCnt = bookmarkRepository.countBySpot(spot);

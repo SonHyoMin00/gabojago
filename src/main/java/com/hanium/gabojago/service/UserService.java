@@ -99,6 +99,9 @@ public class UserService {
     public String updateProfilePhoto(User user, MultipartFile multipartFile) {
         String profilePhoto = fileHandler.parseFileInfo(multipartFile, user);
         user.updateProfilePhoto(profilePhoto);
+
+        if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
+
         return ApplicationProperties.HOST_IMAGE_URL + "profile/" + profilePhoto;
     }
 
