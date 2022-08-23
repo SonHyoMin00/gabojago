@@ -27,7 +27,7 @@ public class HomeController {
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
 
         headers.set("Access-Token", token);
-        headers.setLocation(URI.create("http://localhost:8080/5501/html/index.html"));
+        headers.setLocation(URI.create("http://localhost:5501/html/index.html"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
