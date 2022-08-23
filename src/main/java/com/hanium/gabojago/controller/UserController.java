@@ -2,9 +2,11 @@ package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
+import com.hanium.gabojago.dto.comment.CommentPageResponse;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
 import com.hanium.gabojago.dto.user.UserResponse;
+import com.hanium.gabojago.service.CommentService;
 import com.hanium.gabojago.service.PostService;
 import com.hanium.gabojago.service.SpotService;
 import com.hanium.gabojago.service.UserService;
@@ -27,6 +29,7 @@ public class UserController {
     private final UserService userService;
     private final PostService postService;
     private final SpotService spotService;
+    private final CommentService commentService;
 
     // 마이페이지 사용자 기본 정보 조회
     @GetMapping
@@ -46,6 +49,17 @@ public class UserController {
         User user = userService.findUserByJwtToken(token);
 
         return postService.getUserPosts(user, page - 1, size);
+    }
+
+    //특정 유저의 댓글 조회
+    @GetMapping("/comments")
+    public CommentPageResponse userComments(HttpServletRequest httpServletRequest,
+                                         @RequestParam(required = false, defaultValue = "1", value = "page")int page,
+                                         @RequestParam(required = false, defaultValue = "10", value = "size")int size) {
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(token);
+
+        return commentService.getUserComments(user, page - 1, size);
     }
 
     //사용자 북마크 조회

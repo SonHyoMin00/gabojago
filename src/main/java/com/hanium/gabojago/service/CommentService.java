@@ -35,7 +35,7 @@ public class CommentService {
         //총 페이지 수
         int totalPages = comments.getTotalPages();
 
-        //spotResponses DTO로 변환
+        //CommentResponses DTO로 변환
         List<CommentResponse> commentResponses = comments.getContent()
                 .stream().map(CommentResponse::new).collect(Collectors.toList());
 
@@ -85,5 +85,24 @@ public class CommentService {
 
         commentRepository.delete(comment);
         return id;
+    }
+
+    @Transactional
+    public CommentPageResponse getUserComments(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Comment> comments = commentRepository.findAllByUser(user, pageable);
+
+        //총 페이지 수
+        int totalPages = comments.getTotalPages();
+
+        //CommentResponses DTO로 변환
+        List<CommentResponse> commentResponses = comments.getContent()
+                .stream().map(CommentResponse::new).collect(Collectors.toList());
+
+        // 총 페이지 수 추가하여 반환
+        return CommentPageResponse.builder()
+                .totalPages(totalPages)
+                .comments(commentResponses)
+                .build();
     }
 }
