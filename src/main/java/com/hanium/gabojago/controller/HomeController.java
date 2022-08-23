@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,17 +19,23 @@ public class HomeController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
-    // 카카오 로그인 콜백함수 -> 회원가입 및 로그인 일괄처리
+    // 카카오 로그인 콜백함수(개발용)
     @GetMapping("/users/kakao/callback")
-    public ResponseEntity<Object> kakaoLoginCallback(@RequestParam String code) {
-        User user = userService.findUserByAuthorizedCode(code);
+    public ResponseEntity<String> kakaoLoginCallback(@RequestParam String code) {
+        return ResponseEntity.ok().body(code);
+    }
+
+    // 회원가입 또는 로그인
+    @PostMapping("/users/kakao/login")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> codeRequest) {
+        User user = userService.findUserByAuthorizedCode(codeRequest.get("code"));
 
         HttpHeaders headers = new HttpHeaders();
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
 
-        headers.set("Access-Token", token);
-        headers.setLocation(URI.create("http://localhost:5501/html/index.html"));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        return ResponseEntity.ok()
+                .header("Access-Token", token)
+                .body("로그인 되었습니다.");
     }
 
     // 회원 탈퇴
