@@ -4,13 +4,10 @@ import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.jwt.JwtTokenProvider;
 import com.hanium.gabojago.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -30,7 +27,6 @@ public class HomeController {
     public ResponseEntity<String> login(@RequestBody Map<String, String> codeRequest) {
         User user = userService.findUserByAuthorizedCode(codeRequest.get("code"));
 
-        HttpHeaders headers = new HttpHeaders();
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
 
         return ResponseEntity.ok()
