@@ -71,9 +71,6 @@ public class SpotController {
     }
 
     // 북마크 순 조회
-    /*
-    북마크한 사용자들의 목록이 아니라 북마크 "수"를 전달하도록 수정이 필요함.
-     */
     @GetMapping("bookmark")
     public SpotBookmarkPageResponse getHotplacesByBookmark(
             @RequestParam(required = false, defaultValue = "1", value = "page")int page,
