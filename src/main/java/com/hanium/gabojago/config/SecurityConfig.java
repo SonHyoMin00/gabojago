@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,11 +35,14 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .authorizeRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/hotplaces/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/posts/**", "/comments/**").permitAll()
                 .antMatchers("/users/kakao/**").permitAll()
                 .antMatchers("/", "/images/**").permitAll()
                 .anyRequest().authenticated()
+                .and()
+                .cors()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
