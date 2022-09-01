@@ -4,9 +4,9 @@ import com.hanium.gabojago.domain.*;
 import com.hanium.gabojago.dto.post.*;
 import com.hanium.gabojago.util.handler.FileHandler;
 import com.hanium.gabojago.repository.*;
+import com.hanium.gabojago.util.scheduler.Scheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +29,7 @@ public class PostService {
     private final GreatRepository greatRepository;
     private final PhotoRepository photoRepository;
     private final FileHandler fileHandler;
-
-    @Value("${images.path.post}")
-    private String postPath;
+    private final Scheduler scheduler;
 
     // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
     // 계속 중복됨: 나중에 인터페이스로 나타내기
@@ -66,20 +60,11 @@ public class PostService {
     //매달 top3 게시글 조회
     @Transactional(readOnly = true)
     public List<PostResponse> getTop3Posts() {
-        int year = LocalDate.now().getYear();
-        int preMonth = LocalDate.now().getMonthValue() - 1;
-        if(preMonth == 0) {
-            preMonth = 12;
-            year--;
+        if (scheduler.getPostResponses() == null) {
+            List<Post> posts = scheduler.findTop3Posts();
+            scheduler.setPostResponses(posts.stream().map(PostResponse::new).collect(Collectors.toList()));
         }
-        LocalDate startDate = LocalDate.of(year, preMonth, 1);
-        LocalDateTime start = LocalDateTime.of(startDate, LocalTime.MIN);
-        LocalDate endDate = startDate.plusDays(startDate.lengthOfMonth() - 1);
-        LocalDateTime end = LocalDateTime.of(endDate, LocalTime.MAX);
-
-        List<Post> posts = postRepository
-                .findTop3ByCreatedAtBetweenOrderByGreatCntDescViewCntDescCreatedAtAsc(start, end);
-        return posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        return scheduler.getPostResponses();
     }
 
     // 특정 게시글 조회
