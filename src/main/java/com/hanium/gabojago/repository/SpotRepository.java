@@ -17,8 +17,7 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
 
     Page<Spot> findAllByOrderByViewCntDescSpotIdAsc(Pageable pageable);
 
-    @Query(value = "select s from Spot s where s.region=:region order by s.viewCnt desc, s.spotId")
-    Page<Spot> findHotplacesByRegion(String region, Pageable pageable);
+    Page<Spot> findAllByRegionOrderByViewCntDescSpotIdAsc(String region, Pageable pageable);
 
     @Query(value = "select s from Spot s inner join s.spotTags st on st.tag.tagId=:tagId",
             countQuery = "select count(st) from SpotTag st where st.tag.tagId=:tagId")

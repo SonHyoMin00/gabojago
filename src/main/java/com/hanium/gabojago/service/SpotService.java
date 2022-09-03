@@ -49,7 +49,7 @@ public class SpotService {
     // 지역별 핫플레이스 데이터 가져오기
     public SpotPageResponse findHotplacesByRegion(String region, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Spot> spots = spotRepository.findHotplacesByRegion(region, pageable);
+        Page<Spot> spots = spotRepository.findAllByRegionOrderByViewCntDescSpotIdAsc(region, pageable);
         return convertSpotsToSpotPageResponse(spots);
     }
 
