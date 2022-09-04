@@ -56,7 +56,7 @@ public class SpotService {
     // 태그별 핫플레이스 데이터 가져오기
     public SpotPageResponse findHotplacesByTag(int tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Spot> spots = spotRepository.findHotplaceByTag(tagId, pageable);
+        Page<Spot> spots = spotRepository.findHotplacesByTag(tagId, pageable);
         return convertSpotsToSpotPageResponse(spots);
     }
 
@@ -102,7 +102,7 @@ public class SpotService {
     // 북마크 순 데이터 가져오기
     public SpotBookmarkPageResponse findHotplacesByBookmark(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Spot> spots = spotRepository.findAllByBookmarkGroupBySpotId(pageable);
+        Page<Spot> spots = spotRepository.findHotplacesByBookmarkCnt(pageable);
         return convertSpotsToSpotBookmarkPageResponse(spots);
     }
 

@@ -20,13 +20,13 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
 
     @Query(value = "select s from Spot s inner join s.spotTags st on st.tag.tagId=:tagId",
             countQuery = "select count(st) from SpotTag st where st.tag.tagId=:tagId")
-    Page<Spot> findHotplaceByTag(@Param(value = "tagId") int tagId, Pageable pageable);
+    Page<Spot> findHotplacesByTag(@Param(value = "tagId") int tagId, Pageable pageable);
 
     List<Spot> findAllBySpotXBetweenAndSpotYBetween(BigDecimal xStart, BigDecimal xEnd,
                                                     BigDecimal yStart, BigDecimal yEnd);
 
     @Query(value = "select s from Spot s order by size(s.bookmarks) desc")
-    Page<Spot> findAllByBookmarkGroupBySpotId(Pageable pageable);
+    Page<Spot> findHotplacesByBookmarkCnt(Pageable pageable);
 
     Page<Spot> findAllByBookmarksIn(List<Bookmark> bookmark, Pageable pageable);
 
