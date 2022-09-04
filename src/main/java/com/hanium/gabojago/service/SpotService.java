@@ -63,7 +63,7 @@ public class SpotService {
     // 상세 핫플레이스 데이터 가져오기
     @Transactional
     public SpotMapResponse findHotplaceBySpotId(Long spotId, User user){
-        Spot spot = spotRepository.findBySpotId(spotId)
+        Spot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
         spot.addViewCnt();
 

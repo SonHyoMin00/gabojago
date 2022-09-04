@@ -30,8 +30,6 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
     @Query(value = "select s from Spot s order by size(s.bookmarks) desc")
     Page<Spot> findAllByBookmarkGroupBySpotId(Pageable pageable);
 
-    Optional<Spot> findBySpotId(Long spotId);
-
     Page<Spot> findAllByBookmarksIn(List<Bookmark> bookmark, Pageable pageable);
 
 }
