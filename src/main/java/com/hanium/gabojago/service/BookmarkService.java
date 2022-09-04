@@ -24,7 +24,8 @@ public class BookmarkService {
         Long userId = user.getUserId();
 
         Long spotId = bookmarkSaveRequest.getSpotId();
-        Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
+        Spot spot = spotRepository.findById(spotId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
 
         List<Bookmark> bookmarkSpotUser = bookmarkRepository.findBySpot_SpotIdAndUser_UserId(spotId,userId);
         if (!bookmarkSpotUser.isEmpty()) {
@@ -41,7 +42,8 @@ public class BookmarkService {
 
     // 북마크 삭제하기
     public Long deleteBookmark(Long spotId, User user){
-        Spot spot = spotRepository.findBySpotId(spotId).orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
+        Spot spot = spotRepository.findById(spotId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
 
         Bookmark bookmark = bookmarkRepository.findBySpotAndUser(spot, user)
                 .orElseThrow(() -> new IllegalArgumentException("해당 핫플레이스의 북마크가 없습니다."));
