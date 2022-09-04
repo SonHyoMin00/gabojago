@@ -6,7 +6,6 @@ import com.hanium.gabojago.util.handler.FileHandler;
 import com.hanium.gabojago.repository.*;
 import com.hanium.gabojago.util.scheduler.Scheduler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PostService {
@@ -30,24 +28,6 @@ public class PostService {
     private final PhotoRepository photoRepository;
     private final FileHandler fileHandler;
     private final Scheduler scheduler;
-
-    // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
-    // 계속 중복됨: 나중에 인터페이스로 나타내기
-    private PostPageResponse convertSPostsToPostPageResponse(Page<Post> posts) {
-        //총 페이지 수
-        int totalPages = posts.getTotalPages();
-        log.info("총 페이지 수: " + posts.getTotalPages());
-
-        //spotResponses DTO로 변환
-        List<PostResponse> postResponses = posts.getContent()
-                .stream().map(PostResponse::new).collect(Collectors.toList());
-
-        // 총 페이지 수 추가하여 반환
-        return PostPageResponse.builder()
-                .postResponses(postResponses)
-                .totalPages(totalPages)
-                .build();
-    }
 
     // 전체 게시글 조회
     @Transactional(readOnly = true)
@@ -76,7 +56,6 @@ public class PostService {
 
         // 로그인 한 상태인지 확인 -> 로그인 했다면 좋아요 여부 조회, 로그인 하지 않았다면 조회 없이 무조건 false
         boolean greatState = false;
-        log.info("사용자: " + user);
         if(user != null) {
             Optional<Great> great = greatRepository.findByUserAndPost(post.getUser(), post);
             greatState = great.isPresent();
@@ -87,31 +66,22 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public Long createPost(PostCreateRequest postCreateRequest, User user) {
-        Post post = Post.builder()
-                .user(user)
-                .title(postCreateRequest.getTitle())
-                .context(postCreateRequest.getContext())
-                .build();
+    public Long createPost(PostSaveRequest postSaveRequest, User user) {
+        Post post = postSaveRequest.toPost(user);
 
-        List<Integer> tags = postCreateRequest.getTags();
-        List<Tag> tagList = tagRepository.findAllById(tags);
-        log.info("tagList: " + tagList);
+        List<Integer> tags = postSaveRequest.getTags();
+        if (tags != null) {
+            List<Tag> tagList = tagRepository.findAllById(tags);
 
-        for (Tag tag: tagList) {
-            PostTag postTag = PostTag.builder()
-                    .post(post)
-                    .tag(tag)
-                    .build();
-
-            post.getPostTags().add(postTag);
-            log.info("포스트태그: " + postTag);
+            for (Tag tag: tagList) {
+                PostTag postTag = postSaveRequest.toPostTag(post, tag);
+                post.getPostTags().add(postTag);
+            }
         }
 
         // 첨부파일(이미지) 처리
-        List<Photo> photos = fileHandler.parseFileInfo(postCreateRequest.getFiles(), post);
+        List<Photo> photos = fileHandler.parseFileInfo(postSaveRequest.getFiles(), post);
         if(!photos.isEmpty()) post.getPhotos().addAll(photos);
-        log.info("파일 리스트: " + photos);
 
         // 태그 수만큼 쿼리 추가 발생..! 최적화 필요?
         postRepository.save(post);
@@ -135,35 +105,31 @@ public class PostService {
         List<PostTag> originalPostTags = post.getPostTags();
         if (!originalPostTags.isEmpty()) {
             postTagRepository.deleteAllInBatch(originalPostTags);
+            post.getPostTags().removeAll(originalPostTags);
         }
 
         // 4. 새로 등록할 태그 조회
         List<Integer> tags = postUpdateRequest.getTags();
-        List<Tag> tagList = tagRepository.findAllById(tags);
-        log.info("tagList: " + tagList);
+        List<Tag> tagList = (tags == null ? null : tagRepository.findAllById(tags));
 
         // 5. 새로 등록할 postTag 객체 생성
         List<PostTag> newPostTags = new ArrayList<>();
-        for (Tag tag: tagList) {
-            PostTag postTag = PostTag.builder()
-                    .post(post)
-                    .tag(tag)
-                    .build();
-            newPostTags.add(postTag);
+        if (tagList != null) {
+            for (Tag tag: tagList) {
+                PostTag postTag = postUpdateRequest.toPostTag(post, tag);
+                newPostTags.add(postTag);
+            }
         }
-        log.info("수정된 태그: " + newPostTags);
 
         // 6. 삭제를 요청받은 사진 삭제
-        if(!postUpdateRequest.getDeleteFiles().isEmpty()) {
+        if(postUpdateRequest.getDeleteFiles() != null && !postUpdateRequest.getDeleteFiles().isEmpty()) {
             List<Photo> photos = photoRepository.findAllById(postUpdateRequest.getDeleteFiles());
             fileHandler.deletePhotosInServer(photos);
             photoRepository.deleteAllInBatch(photos);
-            log.info("사진 삭제: " + postUpdateRequest.getDeleteFiles().toString());
         }
 
         // 7. 추가 요청받은 사진 저장
         List<Photo> newPhotos = fileHandler.parseFileInfo(postUpdateRequest.getInsertFiles(), post);
-        log.info("새로 추가된 사진: " + newPhotos.toString());
 
         // 8. post 수정
         post.updatePost(postUpdateRequest, newPostTags, newPhotos);
@@ -188,10 +154,9 @@ public class PostService {
 
         // 4. 첨부파일 DB에서 삭제
         photoRepository.deleteAllInBatch(photos);
-        log.info("사진 삭제 완료.");
 
         // 5. 게시글 삭제
-        // on delete cascade 제약조건이라 post만 지워도 post_tag는 알아서 삭제되는데 post_tag 삭제 쿼리가 n개만큼 먼저 나가는 문제
+        // on delete cascade 제약조건이라 post만 지워도 post_tag는 알아서 삭제되는데 post_tag 삭제 쿼리가 n개만큼 나가는 문제
         postRepository.delete(post);
         return id;
     }
@@ -201,5 +166,22 @@ public class PostService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Post> posts = postRepository.findAllByUser(user, pageable);
         return convertSPostsToPostPageResponse(posts);
+    }
+
+    // Page<Post>를 PostPageResponse(dto)로 바꾸는 함수
+    // 계속 중복되어 수정 필요
+    private PostPageResponse convertSPostsToPostPageResponse(Page<Post> posts) {
+        //총 페이지 수
+        int totalPages = posts.getTotalPages();
+
+        //spotResponses DTO로 변환
+        List<PostResponse> postResponses = posts.getContent()
+                .stream().map(PostResponse::new).collect(Collectors.toList());
+
+        // 총 페이지 수 추가하여 반환
+        return PostPageResponse.builder()
+                .postResponses(postResponses)
+                .totalPages(totalPages)
+                .build();
     }
 }
