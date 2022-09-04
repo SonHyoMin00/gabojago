@@ -1,7 +1,7 @@
 package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.User;
-import com.hanium.gabojago.dto.post.PostCreateRequest;
+import com.hanium.gabojago.dto.post.PostSaveRequest;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.post.PostResponse;
 import com.hanium.gabojago.dto.post.PostUpdateRequest;
@@ -53,17 +53,17 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Long createPost(@RequestPart(name = "request") PostCreateRequest postCreateRequest,
+    public Long createPost(@RequestPart(name = "request") PostSaveRequest postSaveRequest,
                            @RequestPart(name = "files", required = false) List<MultipartFile> files,
                            HttpServletRequest httpServletRequest) {
 
-        postCreateRequest.setFiles(files);
-        log.info(String.valueOf(postCreateRequest));
+        postSaveRequest.setFiles(files);
+        log.info(String.valueOf(postSaveRequest));
 
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
 
-        return postService.createPost(postCreateRequest, user);
+        return postService.createPost(postSaveRequest, user);
     }
 
     // 게시글 수정
