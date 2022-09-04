@@ -14,7 +14,6 @@ import com.hanium.gabojago.oauth.kakao.KakaoUserDto;
 import com.hanium.gabojago.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.Optional;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -62,8 +60,6 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User findUserByJwtToken(String token) {
-        log.info("-----JWT:" + token);
-        log.info("-----secretKey:" + JwtProperties.SECRETKEY);
         String email = Jwts.parser().setSigningKey(JwtProperties.SECRETKEY.getBytes())
                 .parseClaimsJws(token).getBody().getSubject();
         return userRepository.findByEmail(email)
