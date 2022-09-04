@@ -51,13 +51,9 @@ public class CommentService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("id " + id + "에 해당하는 게시글이 존재하지 않습니다."));
 
-        Comment comment = Comment.builder()
-                    .user(user)
-                    .post(post)
-                    .context(commentRequest.getContext())
-                    .build();
-
+        Comment comment = commentRequest.toComment(user, post);
         commentRepository.save(comment);
+
         return comment.getCommentId();
     }
 
