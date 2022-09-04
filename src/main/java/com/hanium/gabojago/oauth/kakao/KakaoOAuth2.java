@@ -21,7 +21,6 @@ public class KakaoOAuth2 {
     private String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
-
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
         // HttpBody 오브젝트 생성
@@ -89,8 +88,10 @@ public class KakaoOAuth2 {
                 break;
             case "30":
                 age = 30;
+                break;
             case "40":
                 age = 40;
+                break;
             case "50":
             case "60":
             case "70":
@@ -112,16 +113,6 @@ public class KakaoOAuth2 {
         // 1. 인가코드 -> 액세스 토큰
         String accessToken = getAccessToken(authorizedCode);
         // 2. 액세스 토큰 -> 카카오 사용자 정보
-        KakaoUserDto user = getUserByAccessToken(accessToken);
-
-        return user;
-    }
-
-    public String getUserEmail(String authorizedCode) {
-        String accessToken = getAccessToken(authorizedCode);
-        // HttpHeader 오브젝트 생성
-        JSONObject body = requestUserInfoJsonObject(accessToken);
-        // 사용자 이메일 리턴
-        return body.getJSONObject("kakao_account").getString("email");
+        return getUserByAccessToken(accessToken);
     }
 }
