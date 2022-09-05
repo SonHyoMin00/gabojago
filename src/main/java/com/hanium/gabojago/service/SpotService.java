@@ -92,7 +92,7 @@ public class SpotService {
         for(Spot spot : spots){
             //북마크 수
             Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
-            log.info("북마크 수: " + bookmarkRepository.countBySpot(spot));
+            log.info("북마크 수: " + bookmarkCnt);
 
            res.add(new SpotMapResponse(spot, bookmarkCnt));
         }

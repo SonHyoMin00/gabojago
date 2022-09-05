@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -21,14 +21,12 @@ public class BookmarkService {
     // 북마크 추가하기
     @Transactional
     public Long saveBookmark(BookmarkSaveRequest bookmarkSaveRequest, User user){
-        Long userId = user.getUserId();
-
         Long spotId = bookmarkSaveRequest.getSpotId();
         Spot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
 
-        List<Bookmark> bookmarkSpotUser = bookmarkRepository.findBySpot_SpotIdAndUser_UserId(spotId,userId);
-        if (!bookmarkSpotUser.isEmpty()) {
+        Optional<Bookmark> bookmarkSpotUser = bookmarkRepository.findBySpotAndUser(spot,user);
+        if (bookmarkSpotUser.isPresent()) {
             throw new IllegalArgumentException("중복된 북마크입니다");
         }
 
