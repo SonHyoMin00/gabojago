@@ -1,9 +1,6 @@
 package com.hanium.gabojago.service;
 
-import com.hanium.gabojago.domain.Bookmark;
-import com.hanium.gabojago.domain.Spot;
-import com.hanium.gabojago.domain.SpotAgeStatistic;
-import com.hanium.gabojago.domain.User;
+import com.hanium.gabojago.domain.*;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkResponse;
 import com.hanium.gabojago.dto.spot.SpotMapResponse;
@@ -12,6 +9,7 @@ import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.repository.BookmarkRepository;
 import com.hanium.gabojago.repository.SpotAgeStatisticRepository;
 import com.hanium.gabojago.repository.SpotRepository;
+import com.hanium.gabojago.repository.UserTagStatisticRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +30,7 @@ public class SpotService {
     private final SpotRepository spotRepository;
     private final BookmarkRepository bookmarkRepository;
     private final SpotAgeStatisticRepository spotAgeStatisticRepository;
+    private final UserTagStatisticRepository userTagStatisticRepository;
 
     // 실시간 핫플레이스 데이터 가져오기
     public List<SpotResponse> getRealtimeHotplaces() {
@@ -71,14 +70,32 @@ public class SpotService {
         Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
         log.info("북마크 수: " + bookmarkCnt);
 
-        // 연령대별 조회수 증가
         if (user != null) {
+            // 연령대별 조회수 증가
             byte age = user.getAge();
-
             SpotAgeStatistic spotAgeStatistic = spotAgeStatisticRepository.findById(spotId)
                     .orElseGet(() -> saveDefaultSpotAgeStatistic(spot));
-
             spotAgeStatistic.increaseAgeViewCnt(age);
+
+            // 핫플레이스에 등록된 사용자의 태그별 조회수 증가
+            List<SpotTag> spotTags = spot.getSpotTags();
+            List<UserTagStatistic> userTagStatistics = userTagStatisticRepository.findAllByUser(user);
+            for (SpotTag spotTag : spotTags) {
+                boolean flag = false;
+                Tag tag = spotTag.getTag();
+
+                for (UserTagStatistic userTagStatistic : userTagStatistics) {
+                    if(userTagStatistic.getTag() == tag) {
+                        flag = true;
+                        userTagStatistic.increaseTagViewCnt();
+                        break;
+                    }
+                }
+                if (!flag) {
+                    UserTagStatistic userTagStatistic = saveDefaultUserTagStatistic(user, tag);
+                    userTagStatistic.increaseTagViewCnt();
+                }
+            }
         }
 
         return new SpotMapResponse(spot, bookmarkCnt);
@@ -122,6 +139,14 @@ public class SpotService {
                 .spot(spot)
                 .build();
         return spotAgeStatisticRepository.save(spotAgeStatistic);
+    }
+
+    private UserTagStatistic saveDefaultUserTagStatistic(User user, Tag tag) {
+        UserTagStatistic userTagStatistic = UserTagStatistic.builder()
+                .user(user)
+                .tag(tag)
+                .build();
+        return userTagStatisticRepository.save(userTagStatistic);
     }
 
     //Page<Spot>을 SpotPageResponse(dto)로 바꾸는 함수
