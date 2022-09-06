@@ -3,6 +3,7 @@ package com.hanium.gabojago.controller;
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.jwt.JwtTokenProvider;
 import com.hanium.gabojago.service.UserService;
+import com.hanium.gabojago.util.properties.OAuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,22 @@ public class HomeController {
         return ResponseEntity.ok().body(code);
     }
 
+    // 회원가입 또는 로그인(개발용)
+    @PostMapping("/users/kakao/login/test")
+    public ResponseEntity<String> loginTest(@RequestBody Map<String, String> codeRequest) {
+        User user = userService.findUserByAuthorizedCode(codeRequest.get("code"), OAuthProperties.REDIRECT_TEST);
+
+        String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
+
+        return ResponseEntity.ok()
+                .header("Access-Token", token)
+                .body("로그인 되었습니다.");
+    }
+
     // 회원가입 또는 로그인
     @PostMapping("/users/kakao/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> codeRequest) {
-        User user = userService.findUserByAuthorizedCode(codeRequest.get("code"));
+        User user = userService.findUserByAuthorizedCode(codeRequest.get("code"), OAuthProperties.REDIRECT_PROD);
 
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
 
