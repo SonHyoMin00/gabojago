@@ -57,7 +57,7 @@ public class PostService {
         // 로그인 한 상태인지 확인 -> 로그인 했다면 좋아요 여부 조회, 로그인 하지 않았다면 조회 없이 무조건 false
         boolean greatState = false;
         if(user != null) {
-            Optional<Great> great = greatRepository.findByUserAndPost(post.getUser(), post);
+            Optional<Great> great = greatRepository.findByUserAndPost(user, post);
             greatState = great.isPresent();
         }
 
