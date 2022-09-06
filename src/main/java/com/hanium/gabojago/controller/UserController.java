@@ -4,6 +4,7 @@ import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
 import com.hanium.gabojago.dto.comment.CommentPageResponse;
 import com.hanium.gabojago.dto.post.PostPageResponse;
+import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
 import com.hanium.gabojago.dto.user.UserResponse;
 import com.hanium.gabojago.service.CommentService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -72,6 +74,15 @@ public class UserController {
         User user = userService.findUserByJwtToken(token);
 
         return spotService.getUserBookmarks(user, page - 1, size);
+    }
+
+    // 사용자 핫플레이스 추천
+    @GetMapping("recommendation")
+    public List<SpotResponse> hotplacesRecommendation(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = userService.findUserByJwtToken(token);
+
+        return spotService.getRecommendedHotplaces(user);
     }
 
     // 닉네임 변경

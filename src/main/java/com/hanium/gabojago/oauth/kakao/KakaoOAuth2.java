@@ -15,10 +15,8 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoOAuth2 {
     @Value("${oauth2.kakao.client-id}")
     String clientId;
-    @Value("${oauth2.kakao.redirect-uri}")
-    String redirectUri;
 
-    private String getAccessToken(String authorizedCode) {
+    private String getAccessToken(String authorizedCode, String redirectUri) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -109,9 +107,9 @@ public class KakaoOAuth2 {
                 .build();
     }
 
-    public KakaoUserDto getUserInfo(String authorizedCode) {
+    public KakaoUserDto getUserInfo(String authorizedCode, String redirectUri) {
         // 1. 인가코드 -> 액세스 토큰
-        String accessToken = getAccessToken(authorizedCode);
+        String accessToken = getAccessToken(authorizedCode, redirectUri);
         // 2. 액세스 토큰 -> 카카오 사용자 정보
         return getUserByAccessToken(accessToken);
     }

@@ -30,4 +30,9 @@ public interface SpotRepository extends JpaRepository<Spot, Long> {
 
     Page<Spot> findAllByBookmarksIn(List<Bookmark> bookmark, Pageable pageable);
 
+    @Query(value = "select distinct s.* from spot s inner join spot_tag st " +
+            "on s.spot_id=st.spot_id and st.tag_id=:tagId " +
+            "order by RAND() limit 10",nativeQuery = true)
+    List<Spot> findAllByTagOrderByRandom(int tagId);
+
 }

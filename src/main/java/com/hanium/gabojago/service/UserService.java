@@ -33,9 +33,9 @@ public class UserService {
 
     // authorizedCode로 가입된 사용자 조회
     @Transactional
-    public User findUserByAuthorizedCode(String authorizedCode) {
+    public User findUserByAuthorizedCode(String authorizedCode, String redirectUri) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
-        KakaoUserDto kakaoUserDto = kakaoOAuth2.getUserInfo(authorizedCode);
+        KakaoUserDto kakaoUserDto = kakaoOAuth2.getUserInfo(authorizedCode, redirectUri);
         String email = kakaoUserDto.getEmail();
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
