@@ -1,5 +1,6 @@
 package com.hanium.gabojago.config;
 
+import com.hanium.gabojago.jwt.JwtAuthenticationEntryPoint;
 import com.hanium.gabojago.jwt.JwtAuthenticationFilter;
 import com.hanium.gabojago.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.CorsUtils;
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 //    @Bean
 //    public AuthenticationManager authenticationManager(
@@ -46,7 +48,9 @@ public class SecurityConfig {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint);
 
         return http.build();
     }
