@@ -1,5 +1,6 @@
 package com.hanium.gabojago.domain;
 
+import com.hanium.gabojago.util.properties.ApplicationProperties;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,6 +42,12 @@ public class User extends BaseTimeEntity{
 
     public void updateProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public String getProfilePhotoPath() {
+        if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
+
+        return ApplicationProperties.HOST_IMAGE_URL + "profile/" + profilePhoto;
     }
 
     public void deleteProfile() {

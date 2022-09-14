@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/hotplaces/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/posts/**", "/comments/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/posts/**", "/comments/**", "/users").permitAll()
                 .antMatchers("/users/kakao/**").permitAll()
                 .antMatchers("/", "/images/**").permitAll()
                 .anyRequest().authenticated()

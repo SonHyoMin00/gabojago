@@ -6,7 +6,8 @@ import com.hanium.gabojago.dto.comment.CommentPageResponse;
 import com.hanium.gabojago.dto.post.PostPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
-import com.hanium.gabojago.dto.user.UserResponse;
+import com.hanium.gabojago.dto.user.UserInfoResponse;
+import com.hanium.gabojago.dto.user.UserMypageResponse;
 import com.hanium.gabojago.service.CommentService;
 import com.hanium.gabojago.service.PostService;
 import com.hanium.gabojago.service.SpotService;
@@ -33,13 +34,22 @@ public class UserController {
     private final SpotService spotService;
     private final CommentService commentService;
 
-    // 마이페이지 사용자 기본 정보 조회
+    // 마이페이지 사용자 상세 정보 조회
     @GetMapping
-    public UserResponse defaultUserInfo(HttpServletRequest httpServletRequest) {
+    public UserInfoResponse DefaultUserInfo(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null) return null;
+        User user = userService.findUserByJwtToken(token);
+
+        return userService.getUserInfo(user);
+    }
+
+    @GetMapping("detail")
+    public UserMypageResponse UserInfoDetail(HttpServletRequest httpServletRequest) {
         String token = httpServletRequest.getHeader("Authorization");
         User user = userService.findUserByJwtToken(token);
 
-        return userService.getDefaultUserInfo(user);
+        return userService.getUserInfoDetail(user);
     }
 
     //특정 유저의 게시글 조회

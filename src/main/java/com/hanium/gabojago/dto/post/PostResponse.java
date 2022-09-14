@@ -3,7 +3,7 @@ package com.hanium.gabojago.dto.post;
 import com.hanium.gabojago.domain.Post;
 import com.hanium.gabojago.dto.photo.PhotoResponse;
 import com.hanium.gabojago.dto.postTag.PostTagResponse;
-import com.hanium.gabojago.dto.user.UserPostResponse;
+import com.hanium.gabojago.dto.user.UserInfoResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 public class PostResponse {
     private Long postId;
-    private UserPostResponse user;
+    private UserInfoResponse user;
     private String title;
     private String context;
     private List<PostTagResponse> postTags;
@@ -28,7 +28,7 @@ public class PostResponse {
     @Builder
     public PostResponse(Post entity) {
         this.postId = entity.getPostId();
-        this.user = UserPostResponse.builder()
+        this.user = UserInfoResponse.builder()
                 .user(entity.getUser())
                 .build();
         this.title = entity.getTitle();

@@ -2,7 +2,8 @@ package com.hanium.gabojago.service;
 
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.user.NameUpdateRequest;
-import com.hanium.gabojago.dto.user.UserResponse;
+import com.hanium.gabojago.dto.user.UserInfoResponse;
+import com.hanium.gabojago.dto.user.UserMypageResponse;
 import com.hanium.gabojago.util.handler.FileHandler;
 import com.hanium.gabojago.repository.BookmarkRepository;
 import com.hanium.gabojago.repository.CommentRepository;
@@ -71,19 +72,20 @@ public class UserService {
         return user.getUserId();
     }
 
-    @Transactional
-    public String updateName(User user, NameUpdateRequest nameUpdateRequest) {
-        user.updateName(nameUpdateRequest.getName());
-        return nameUpdateRequest.getName();
+    @Transactional(readOnly = true)
+    public UserInfoResponse getUserInfo(User user) {
+        return UserInfoResponse.builder()
+                .user(user)
+                .build();
     }
 
     @Transactional
-    public UserResponse getDefaultUserInfo(User user) {
+    public UserMypageResponse getUserInfoDetail(User user) {
         Long postCnt = postRepository.countByUser(user);
         Long commentCnt = commentRepository.countByUser(user);
         Long bookmarkCnt = bookmarkRepository.countByUser(user);
 
-        return UserResponse.builder()
+        return UserMypageResponse.builder()
                 .user(user)
                 .postCnt(postCnt)
                 .commentCnt(commentCnt)
@@ -92,13 +94,17 @@ public class UserService {
     }
 
     @Transactional
+    public String updateName(User user, NameUpdateRequest nameUpdateRequest) {
+        user.updateName(nameUpdateRequest.getName());
+        return nameUpdateRequest.getName();
+    }
+
+    @Transactional
     public String updateProfilePhoto(User user, MultipartFile multipartFile) {
         String profilePhoto = fileHandler.parseFileInfo(multipartFile, user);
         user.updateProfilePhoto(profilePhoto);
 
-        if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
-
-        return ApplicationProperties.HOST_IMAGE_URL + "profile/" + profilePhoto;
+        return user.getProfilePhotoPath();
     }
 
     @Transactional
