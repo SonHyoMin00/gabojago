@@ -86,7 +86,7 @@ public class CommentService {
     @Transactional
     public CommentPageResponse getUserComments(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Comment> comments = commentRepository.findAllByUser(user, pageable);
+        Page<Comment> comments = commentRepository.findAllByUserWithPost(user, pageable);
 
         //총 페이지 수
         int totalPages = comments.getTotalPages();
