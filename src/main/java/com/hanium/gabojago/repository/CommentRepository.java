@@ -19,8 +19,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         countQuery = "select count(c) from Comment c where c.post=:post")
     Page<Comment> findAllByPostWithUser(Post post, Pageable pageable);
 
-
-    Page<Comment> findAllByUser(User user, Pageable pageable);
+    @Query(
+            value = "select c from Comment c join fetch c.post where c.user=:user",
+            countQuery = "select count(c) from Comment c where c.user=:user")
+    Page<Comment> findAllByUserWithPost(User user, Pageable pageable);
 
     Long countByUser(User user);
 }
