@@ -50,4 +50,19 @@ public class BookmarkService {
 
         return spotId;
     }
+
+    // 북마크 여부 확인하기
+    public boolean checkBookmark(Long spotId, User user){
+        Spot spot = spotRepository.findById(spotId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
+
+        // 로그인 한 상태인지 확인 -> 로그인 했다면 좋아요 여부 조회, 로그인 하지 않았다면 조회 없이 무조건 false
+        boolean bookmarkState = false;
+        if(user != null) {
+            Optional<Bookmark> bookmark = bookmarkRepository.findBySpotAndUser(spot, user);
+            bookmarkState = bookmark.isPresent();
+        }
+
+        return bookmarkState;
+    }
 }

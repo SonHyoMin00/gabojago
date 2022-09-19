@@ -36,4 +36,15 @@ public class BookmarkController {
 
         return bookmarkService.deleteBookmark(spotId, user);
     }
+
+    @GetMapping("{spotId}")
+    public boolean checkBookmark(@PathVariable Long spotId, HttpServletRequest httpServletRequest) {
+
+        String token = httpServletRequest.getHeader("Authorization");
+        User user = null;
+        if (token != null)
+            user = userService.findUserByJwtToken(token);
+
+        return bookmarkService.checkBookmark(spotId, user);
+    }
 }
