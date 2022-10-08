@@ -22,6 +22,10 @@ public class Post extends BaseTimeEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "spot_id")
+    private Spot spot = null;
+
     @Column
     private String title;
 
