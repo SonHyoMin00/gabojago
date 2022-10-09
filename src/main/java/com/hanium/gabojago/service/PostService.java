@@ -24,6 +24,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
+    private final SpotRepository spotRepository;
     private final GreatRepository greatRepository;
     private final PhotoRepository photoRepository;
     private final FileHandler fileHandler;
@@ -33,7 +34,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostPageResponse getPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Post> posts = postRepository.findAllSpotsByPage(pageable);
+        Page<Post> posts = postRepository.findAllPostsByPage(pageable);
         return convertSPostsToPostPageResponse(posts);
     }
 
@@ -67,7 +68,14 @@ public class PostService {
     // 게시글 작성
     @Transactional
     public Long createPost(PostSaveRequest postSaveRequest, User user) {
-        Post post = postSaveRequest.toPost(user);
+        Spot spot = null;
+        if (postSaveRequest.getSpotId() != null) {
+            spot = spotRepository.findById(postSaveRequest.getSpotId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "id " + postSaveRequest.getSpotId() + "에 해당하는 핫플레이스가 존재하지 않습니다."));
+        }
+
+        Post post = postSaveRequest.toPost(user, spot);
 
         List<Integer> tags = postSaveRequest.getTags();
         if (tags != null) {

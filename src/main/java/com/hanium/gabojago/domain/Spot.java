@@ -1,11 +1,13 @@
 package com.hanium.gabojago.domain;
 
+import com.hanium.gabojago.dto.post.PostResponse;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -47,11 +49,12 @@ public class Spot {
     @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "spot", fetch = FetchType.LAZY)
-    private List<Post> posts = new ArrayList<>();
-
     public void addViewCnt() {
         this.viewCnt++;
+    }
+
+    public List<PostResponse> getRecent3Posts(List<Post> posts) {
+        return posts.stream().map(PostResponse::new).collect(Collectors.toList());
     }
 
 }

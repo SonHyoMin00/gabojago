@@ -2,6 +2,7 @@ package com.hanium.gabojago.controller;
 
 import com.hanium.gabojago.domain.User;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
+import com.hanium.gabojago.dto.spot.SpotDetailResponse;
 import com.hanium.gabojago.dto.spot.SpotMapResponse;
 import com.hanium.gabojago.dto.spot.SpotPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
@@ -73,8 +74,8 @@ public class SpotController {
 
     // 상세정보 조회
     @GetMapping("id/{idx}")
-    public SpotMapResponse findHotplaceBySpotId(@PathVariable("idx") Long id,
-                                                HttpServletRequest httpServletRequest) {
+    public SpotDetailResponse findHotplaceBySpotId(@PathVariable("idx") Long id,
+                                                   HttpServletRequest httpServletRequest) {
 
         String token = httpServletRequest.getHeader("Authorization");
         User user = null;
