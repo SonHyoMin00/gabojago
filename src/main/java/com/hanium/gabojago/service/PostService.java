@@ -62,7 +62,8 @@ public class PostService {
             greatState = great.isPresent();
         }
 
-        return new PostDetailResponse(post, greatState);
+        Long spotId = post.getSpot() != null? post.getSpot().getSpotId() : null;
+        return new PostDetailResponse(post, spotId, greatState);
     }
 
     // 게시글 작성
