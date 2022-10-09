@@ -45,7 +45,8 @@ public class User extends BaseTimeEntity{
     }
 
     public String getProfilePhotoPath() {
-        if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
+        if(profilePhoto == null) return null;
+        else if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
 
         return ApplicationProperties.HOST_IMAGE_URL + "profile/" + profilePhoto;
     }
