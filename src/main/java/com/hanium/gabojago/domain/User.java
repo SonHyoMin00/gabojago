@@ -16,16 +16,12 @@ public class User extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column
     private String email;
 
-    @Column
     private String name;
 
-    @Column
     private Byte age;
 
-    @Column
     private String profilePhoto;
 
     @Builder

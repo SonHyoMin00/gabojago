@@ -16,25 +16,18 @@ public class Spot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long spotId;
 
-    @Column
     private String spotName;
 
-    @Column
     private String address;
 
-    @Column
     private String region;
 
-    @Column
     private String detail;
 
-    @Column
     private String tel;
 
-    @Column
     private String spotImage;
 
-    @Column
     private Integer viewCnt;
 
     @Column(name = "spot_x")

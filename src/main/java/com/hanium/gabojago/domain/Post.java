@@ -26,16 +26,12 @@ public class Post extends BaseTimeEntity{
     @JoinColumn(name = "spot_id")
     private Spot spot = null;
 
-    @Column
     private String title;
 
-    @Column
     private String context;
 
-    @Column
     private int viewCnt;
 
-    @Column
     private int greatCnt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)

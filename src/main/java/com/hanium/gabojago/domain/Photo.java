@@ -18,13 +18,10 @@ public class Photo {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column
     private String fileName;
 
-    @Column
     private String originalName;
 
-    @Column
     private Long fileSize;
 
     @Builder
