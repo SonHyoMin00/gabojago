@@ -3,6 +3,7 @@ package com.hanium.gabojago.service;
 import com.hanium.gabojago.domain.*;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkPageResponse;
 import com.hanium.gabojago.dto.bookmark.SpotBookmarkResponse;
+import com.hanium.gabojago.dto.spot.SpotDetailResponse;
 import com.hanium.gabojago.dto.spot.SpotMapResponse;
 import com.hanium.gabojago.dto.spot.SpotPageResponse;
 import com.hanium.gabojago.dto.spot.SpotResponse;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class SpotService {
     private final SpotRepository spotRepository;
+    private final PostRepository postRepository;
     private final BookmarkRepository bookmarkRepository;
     private final SpotTagRepository spotTagRepository;
     private final SpotAgeStatisticRepository spotAgeStatisticRepository;
@@ -58,10 +60,13 @@ public class SpotService {
 
     // 상세 핫플레이스 데이터 가져오기
     @Transactional
-    public SpotMapResponse findHotplaceBySpotId(Long spotId, User user){
+    public SpotDetailResponse findHotplaceBySpotId(Long spotId, User user){
         Spot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 핫플레이스가 없습니다."));
         spot.addViewCnt();
+
+        // 관련된 최신 post 3개
+        List<Post> posts = postRepository.findTop3BySpotOrderByCreatedAtDesc(spot);
 
         //북마크 수
         Long bookmarkCnt = bookmarkRepository.countBySpot(spot);
@@ -98,7 +103,11 @@ public class SpotService {
             }
         }
 
-        return new SpotMapResponse(spot, bookmarkCnt);
+        return SpotDetailResponse.builder()
+                .entity(spot)
+                .posts(posts)
+                .bookmarkCnt(bookmarkCnt)
+                .build();
     }
 
     // 사용자 위치기반 데이터 가져오기

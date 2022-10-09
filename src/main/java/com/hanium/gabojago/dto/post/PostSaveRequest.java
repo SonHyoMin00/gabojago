@@ -1,9 +1,6 @@
 package com.hanium.gabojago.dto.post;
 
-import com.hanium.gabojago.domain.Post;
-import com.hanium.gabojago.domain.PostTag;
-import com.hanium.gabojago.domain.Tag;
-import com.hanium.gabojago.domain.User;
+import com.hanium.gabojago.domain.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,12 +11,14 @@ import java.util.List;
 public class PostSaveRequest {
     private String title;
     private String context;
+    private Long spotId;
     private List<Integer> tags;
     private List<MultipartFile> files;
 
-    public Post toPost(User user) {
+    public Post toPost(User user, Spot spot) {
         return Post.builder()
                 .user(user)
+                .spot(spot)
                 .title(title)
                 .context(context)
                 .build();

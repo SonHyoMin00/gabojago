@@ -22,16 +22,16 @@ public class Post extends BaseTimeEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "spot_id")
+    private Spot spot = null;
+
     private String title;
 
-    @Column
     private String context;
 
-    @Column
     private int viewCnt;
 
-    @Column
     private int greatCnt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -41,8 +41,9 @@ public class Post extends BaseTimeEntity{
     private List<Photo> photos = new ArrayList<>();
 
     @Builder
-    public Post(User user, String title, String context) {
+    public Post(User user, String title, String context, Spot spot) {
         this.user = user;
+        this.spot = spot;
         this.title = title;
         this.context = context;
     }

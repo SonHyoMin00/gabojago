@@ -24,7 +24,6 @@ public class UserTagStatistic {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
-    @Column
     private Integer tagCnt = 0;
 
     @Builder

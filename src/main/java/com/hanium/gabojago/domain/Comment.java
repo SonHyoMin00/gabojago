@@ -21,7 +21,6 @@ public class Comment extends BaseTimeEntity{
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column
     private String context;
 
     @Builder

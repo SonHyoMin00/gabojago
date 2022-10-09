@@ -1,6 +1,7 @@
 package com.hanium.gabojago.repository;
 
 import com.hanium.gabojago.domain.Post;
+import com.hanium.gabojago.domain.Spot;
 import com.hanium.gabojago.domain.User;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(
             value = "select p from Post p join fetch p.user",
             countQuery = "select count(p) from Post p")
-    Page<Post> findAllSpotsByPage(Pageable pageable);
+    Page<Post> findAllPostsByPage(Pageable pageable);
 
     //가독성이 매우 나쁘다.....
     List<Post> findTop3ByCreatedAtBetweenOrderByGreatCntDescViewCntDescCreatedAtAsc(LocalDateTime start, LocalDateTime end);
@@ -30,4 +31,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByUser(User user, Pageable pageable);
 
     Long countByUser(User user);
+
+    List<Post> findTop3BySpotOrderByCreatedAtDesc(Spot spot);
 }

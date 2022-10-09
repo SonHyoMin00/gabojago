@@ -16,16 +16,12 @@ public class User extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column
     private String email;
 
-    @Column
     private String name;
 
-    @Column
     private Byte age;
 
-    @Column
     private String profilePhoto;
 
     @Builder
@@ -45,7 +41,8 @@ public class User extends BaseTimeEntity{
     }
 
     public String getProfilePhotoPath() {
-        if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
+        if(profilePhoto == null) return null;
+        else if(profilePhoto.contains("http://k.kakaocdn.net/")) return profilePhoto;
 
         return ApplicationProperties.HOST_IMAGE_URL + "profile/" + profilePhoto;
     }
